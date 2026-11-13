@@ -1,0 +1,355 @@
+<title>Braun Vintage UI</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap">
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     Braun Vintage UI · component gallery (built from braun-ui/src/*.html by build.sh)
+     How to read this file:
+       <style data-css="NAME">     CSS of one component (shown in its CSS tab)
+       <section data-view="NAME">  the component page; the example markup is inside .dx-stage
+       <script data-js="NAME">     the small behaviour a component needs (JS tab)
+       data-needs="a b"            other components whose CSS the example also uses
+       data-js="a b"               shared scripts the example also uses
+     Text is English; Spanish lives in data-es attributes (docs) and in window.DX_ES (examples).
+     dx-* classes belong to the documentation site only, not to the design system.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+<style data-css="tokens">
+  /* Braun Vintage · tokens. Layout: fixed faceplate + navigation rail + one page per component. */
+  :root {
+    --paper: #F0EFEB; --panel: #FFFFFF; --inset: #E6E5E0; --line: #D5D4CF; --rule: #92918D;
+    --ink: #292929; --steel: #92918D; --signal: #F36B32; --signal-soft: #F9D9CA; --on-signal: #2A1608; --ok: #46857A;
+    --sev-critical: #BE3A2B; --sev-high: #F36B32; --sev-medium: #D99A3C; --sev-low: #5E8A86; --sev-info: #92918D;
+    --c-blue: #2F5D8A; --c-yellow: #E8B629; --c-green: #4F7F3A; --c-brown: #6B4F3A; --c-teal: #5E8A86;
+    --steel-text: #6E6D69; --signal-text: #B8481A; --ok-text: #3E6E6A; --medium-text: #7A5A00;
+    --sans: "Archivo", system-ui, -apple-system, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #292929; --panel: #323130; --inset: #3A3937; --line: #3E3D3B; --rule: #605F5B;
+      --ink: #F0EFEB; --steel: #A3A29D; --signal: #F36B32; --signal-soft: #5A3A2A; --on-signal: #2A1608; --ok: #6FB3A4;
+      --sev-critical: #D85A49; --sev-high: #F36B32; --sev-medium: #E0A94E; --sev-low: #6FA39E; --sev-info: #A3A29D;
+      --c-blue: #7BA3CC; --c-yellow: #EBC550; --c-green: #8DB476; --c-brown: #B8977A; --c-teal: #6FA39E;
+      --steel-text: #A3A29D; --signal-text: #F36B32; --ok-text: #6FB3A4; --medium-text: #E0A94E;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #292929; --panel: #323130; --inset: #3A3937; --line: #3E3D3B; --rule: #605F5B;
+    --ink: #F0EFEB; --steel: #A3A29D; --signal: #F36B32; --signal-soft: #5A3A2A; --on-signal: #2A1608; --ok: #6FB3A4;
+    --sev-critical: #D85A49; --sev-high: #F36B32; --sev-medium: #E0A94E; --sev-low: #6FA39E; --sev-info: #A3A29D;
+    --c-blue: #7BA3CC; --c-yellow: #EBC550; --c-green: #8DB476; --c-brown: #B8977A; --c-teal: #6FA39E;
+    --steel-text: #A3A29D; --signal-text: #F36B32; --ok-text: #6FB3A4; --medium-text: #E0A94E;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html { scrollbar-gutter: stable; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 13px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  h1, h2, h3, h4 { margin: 0; font-weight: 600; }
+  button, input, select, textarea { font-family: inherit; }
+  :focus-visible { outline: 2px solid var(--signal); outline-offset: 1px; }
+</style>
+
+<style>
+  /* ── Documentation site (dx-*) ───────────────────────────────────────────── */
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); background: var(--panel); z-index: 40; }
+  .dx-top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 35; background: var(--panel); border-bottom: 1px solid var(--rule); }
+  .dx-mission { max-width: 1340px; margin: 0 auto; display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; padding-block: 12px 10px; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+  .dx-brand { display: flex; align-items: center; gap: 9px; color: var(--ink); text-decoration: none; }
+  .dx-mark { width: 13px; height: 13px; background: var(--signal); flex: none; }
+  .dx-word { font-weight: 700; font-size: 16px; letter-spacing: .3px; white-space: nowrap; }
+  .dx-model { font-size: 11px; color: var(--steel-text); padding-left: 10px; border-left: 1px solid var(--line); white-space: nowrap; }
+  .dx-tools { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .dx-search { width: 180px; max-width: 40vw; height: 30px; padding: 0 10px; border: 1px solid var(--line); border-radius: 0; background: var(--paper); color: var(--ink); font-size: 12.5px; }
+  .dx-search:focus { outline: none; border-color: var(--signal); }
+  .dx-tool { height: 30px; padding: 0 11px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+  .dx-tool:hover { border-color: var(--rule); }
+  .dx-lang { display: inline-flex; border: 1px solid var(--line); }
+  .dx-lang button { height: 28px; padding: 0 9px; border: none; border-right: 1px solid var(--line); background: var(--paper); color: var(--steel-text); font-size: 11.5px; font-weight: 600; cursor: pointer; }
+  .dx-lang button:last-child { border-right: none; }
+  .dx-lang button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  #dx-menu { display: none; }
+  /* The scale under the faceplate works like a tuning dial: the needle shows where the open page sits in the catalogue. */
+  .dx-scale { --pos: 0; position: relative; height: 7px; max-width: 1340px; margin: 0 auto; }
+  .dx-scale::before { content: ""; position: absolute; inset: 0 max(20px, env(safe-area-inset-right, 0px)) 0 max(20px, env(safe-area-inset-left, 0px)); background: repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 7px); }
+  .dx-scale::after { content: ""; position: absolute; top: -3px; bottom: 0; width: 2px; left: calc(max(20px, env(safe-area-inset-left, 0px)) + var(--pos) * (100% - max(20px, env(safe-area-inset-left, 0px)) - max(20px, env(safe-area-inset-right, 0px)) - 2px)); background: var(--signal); transition: left .45s cubic-bezier(.2,.7,.2,1); }
+  @media (prefers-reduced-motion: reduce) { .dx-scale::after { transition: none; } }
+
+  .dx-shell { max-width: 1340px; margin: 0 auto; display: grid; grid-template-columns: 232px minmax(0, 1fr); }
+  .dx-rail { position: sticky; top: calc(60px + env(safe-area-inset-top, 0px)); align-self: start; max-height: calc(100vh - 60px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--line) transparent; border-right: 1px solid var(--line); padding: 20px 14px 28px; padding-left: max(20px, env(safe-area-inset-left, 0px)); display: flex; flex-direction: column; gap: 18px; }
+  .dx-group { display: flex; flex-direction: column; gap: 1px; }
+  .dx-group > span { font-size: 11px; font-weight: 600; color: var(--steel-text); text-transform: uppercase; letter-spacing: .4px; padding: 0 10px 7px; }
+  .dx-group a { display: block; padding: 5px 10px; border-left: 3px solid transparent; font-size: 12.5px; color: var(--steel-text); text-decoration: none; }
+  .dx-group a:hover { color: var(--ink); }
+  .dx-group a[aria-current="page"] { color: var(--ink); font-weight: 600; background: var(--inset); border-left-color: var(--signal); }
+  .dx-main { min-width: 0; padding-block: 26px 60px; padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+  @media (max-width: 820px) {
+    #dx-menu { display: inline-block; }
+    .dx-model { display: none; }
+    .dx-shell { grid-template-columns: minmax(0, 1fr); }
+    .dx-rail { display: none; position: static; max-height: 62vh; border-right: none; border-bottom: 1px solid var(--rule); background: var(--panel); padding: 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+    .dx-rail.open { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px 12px; }
+    .dx-main { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-top: 20px; }
+  }
+
+  .dx-view { max-width: 940px; display: flex; flex-direction: column; gap: 18px; }
+  .dx-head h1 { font-size: 21px; line-height: 1.2; text-wrap: balance; }
+  .dx-head p { margin: 7px 0 0; font-size: 13.5px; line-height: 1.6; color: var(--steel-text); max-width: 68ch; }
+  .dx-eyebrow { font-size: 11px; font-weight: 600; color: var(--steel-text); text-transform: uppercase; letter-spacing: .4px; margin-top: 6px; }
+  .dx-ex { border: 1px solid var(--rule); background: var(--panel); min-width: 0; }
+  .dx-bar { display: flex; align-items: stretch; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+  .dx-tab { background: none; border: none; border-right: 1px solid var(--line); padding: 9px 14px; font-size: 12px; font-weight: 500; color: var(--steel-text); cursor: pointer; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .dx-tab::before { content: ""; width: 8px; height: 8px; border: 1px solid var(--line); flex: none; }
+  .dx-tab:hover { color: var(--ink); }
+  .dx-tab[aria-pressed="true"] { color: var(--ink); background: var(--paper); }
+  .dx-tab[aria-pressed="true"]::before { background: var(--signal); border-color: var(--signal); }
+  .dx-copy { position: sticky; right: 0; margin-left: auto; background: var(--panel); border: none; border-left: 1px solid var(--line); padding: 0 14px; font-size: 11.5px; font-weight: 500; color: var(--steel-text); cursor: pointer; white-space: nowrap; }
+  .dx-copy:hover { color: var(--ink); }
+  .dx-copy.done { color: var(--ok-text); }
+  .dx-stage { padding: 30px 24px; background: var(--paper); display: flex; flex-wrap: wrap; gap: 16px 20px; align-items: center; justify-content: center; min-width: 0; }
+  .dx-stage.block { flex-direction: column; flex-wrap: nowrap; align-items: stretch; gap: 18px; }
+  .dx-stage.block > * { min-width: 0; }
+  .dx-stage.narrow > * { width: 100%; max-width: 520px; align-self: center; }
+  .dx-stage.start { align-items: flex-start; }
+  @media (max-width: 560px) { .dx-stage { padding: 20px 14px; } }
+  .dx-code { margin: 0; padding: 16px 18px; background: var(--inset); color: var(--ink); font-family: var(--mono); font-size: 11.5px; line-height: 1.65; white-space: pre; tab-size: 2; overflow: auto; max-height: 540px; }
+  .dx-rules { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .dx-rules li { border-left: 2px solid var(--line); padding-left: 11px; font-size: 12.5px; line-height: 1.55; max-width: 76ch; }
+  .dx-rules code, .dx-head code, .dx-install code { font-family: var(--mono); font-size: 11.5px; background: var(--inset); padding: 1px 5px; }
+  .dx-pager { max-width: 940px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding-top: 18px; border-top: 1px solid var(--line); margin-top: 26px; }
+  .dx-pager a { display: inline-flex; flex-direction: column; gap: 2px; padding: 8px 13px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); text-decoration: none; font-size: 12.5px; font-weight: 500; }
+  .dx-pager a:hover { border-color: var(--rule); }
+  .dx-pager a small { font-size: 10.5px; color: var(--steel-text); font-weight: 400; }
+  .dx-pager a.next { margin-left: auto; text-align: right; }
+
+  .dx-hero { border: 1px solid var(--rule); background: var(--panel); display: grid; grid-template-columns: auto minmax(0, 1fr); }
+  .dx-hero > div { padding: 20px 22px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px 22px; min-width: 0; }
+  .dx-hero > div + div { border-left: 1px solid var(--line); flex-direction: column; flex-wrap: nowrap; align-items: stretch; gap: 16px; }
+  .dx-hero .dx-row { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; }
+  .dx-hero .dx-levels { flex: 1 1 180px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  @media (max-width: 700px) { .dx-hero { grid-template-columns: minmax(0, 1fr); } .dx-hero > div + div { border-left: none; border-top: 1px solid var(--line); } }
+  .dx-install { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); border: 1px solid var(--rule); background: var(--panel); counter-reset: step; overflow: hidden; }
+  .dx-install li { counter-increment: step; padding: 15px 18px 16px; border-left: 1px solid var(--line); display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; line-height: 1.55; margin-left: -1px; }
+  .dx-install li::before { content: counter(step); font-size: 36px; font-weight: 600; line-height: 1; letter-spacing: -.5px; font-variant-numeric: tabular-nums; }
+  .dx-install b { font-size: 13px; }
+  .dx-install span { color: var(--steel-text); }
+  .dx-install a, .dx-head a { color: var(--signal-text); }
+  .dx-index { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .dx-index a { padding: 9px 12px; background: var(--panel); border: 1px solid var(--line); color: var(--ink); text-decoration: none; font-size: 12.5px; font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dx-index a:hover { border-color: var(--ink); }
+  .dx-principles { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px 22px; margin: 0; }
+  .dx-principles div { border-left: 2px solid var(--line); padding-left: 11px; }
+  .dx-principles dt { font-size: 12.5px; font-weight: 600; }
+  .dx-principles dd { margin: 2px 0 0; font-size: 12px; color: var(--steel-text); line-height: 1.5; }
+  .dx-foot { font-size: 11px; color: var(--steel-text); margin: 0; }
+  .dx-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 10px; }
+  .dx-sw { display: flex; flex-direction: column; text-align: left; padding: 0; background: var(--panel); border: 1px solid var(--line); color: var(--ink); cursor: pointer; min-width: 0; }
+  .dx-sw:hover { border-color: var(--ink); }
+  .dx-sw i { display: block; height: 46px; border-bottom: 1px solid var(--line); }
+  .dx-sw div { padding: 9px 11px 10px; display: flex; flex-direction: column; gap: 2px; }
+  .dx-sw b { font-family: var(--mono); font-size: 11.5px; font-weight: 400; }
+  .dx-sw span { font-family: var(--mono); font-size: 10.5px; color: var(--steel-text); font-variant-numeric: tabular-nums; }
+  .dx-sw em { font-style: normal; font-size: 11px; color: var(--steel-text); line-height: 1.4; margin-top: 2px; }
+  .dx-specrow { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 6px 18px; align-items: baseline; padding: 13px 0; border-bottom: 1px solid var(--line); }
+  .dx-specrow:last-child { border-bottom: none; }
+  .dx-cap { font-size: 11px; color: var(--steel-text); }
+  .dx-demo-col { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  @media (max-width: 560px) { .dx-specrow { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
+<!-- ── Faceplate ────────────────────────────────────────────────────────────── -->
+<header class="dx-top">
+  <div class="dx-mission">
+    <a class="dx-brand" href="#intro"><span class="dx-mark"></span><span class="dx-word">Braun Vintage UI</span></a>
+    <span class="dx-model">components · v2.0</span>
+    <div class="dx-tools">
+      <button class="dx-tool" id="dx-menu" type="button" aria-expanded="false">Menu</button>
+      <input class="dx-search" id="dx-search" type="search" placeholder="Search components" aria-label="Search components">
+      <div class="dx-lang" role="group" aria-label="Language">
+        <button type="button" data-lang="en" aria-pressed="true">EN</button>
+        <button type="button" data-lang="es" aria-pressed="false">ES</button>
+      </div>
+      <button class="dx-tool" id="dx-theme" type="button">Dark mode</button>
+    </div>
+  </div>
+  <div class="dx-scale" id="dx-scale" aria-hidden="true"></div>
+</header>
+
+<div class="dx-shell">
+  <nav class="dx-rail" id="dx-rail" aria-label="Components">
+    <div class="dx-group"><span>Get started</span>
+      <a href="#intro">Introduction</a>
+      <a href="#tokens">Color tokens</a>
+    </div>
+    <div class="dx-group"><span>Instruments</span>
+      <a href="#knob">Knob</a>
+      <a href="#dial">Dial</a>
+      <a href="#fader">Fader</a>
+      <a href="#gauge">Gauge</a>
+      <a href="#level">Level meter</a>
+      <a href="#readout">Readout</a>
+      <a href="#meter">Meter</a>
+      <a href="#lamp">Lamp</a>
+      <a href="#scale">Scale</a>
+      <a href="#steps">Steps</a>
+      <a href="#faceplate">Faceplate</a>
+    </div>
+    <div class="dx-group"><span>Components</span>
+      <a href="#accordion">Accordion</a>
+      <a href="#alert">Alert</a>
+      <a href="#alert-dialog">Alert Dialog</a>
+      <a href="#aspect-ratio">Aspect Ratio</a>
+      <a href="#attachment">Attachment</a>
+      <a href="#avatar">Avatar</a>
+      <a href="#badge">Badge</a>
+      <a href="#breadcrumb">Breadcrumb</a>
+      <a href="#bubble">Bubble</a>
+      <a href="#button">Button</a>
+      <a href="#button-group">Button Group</a>
+      <a href="#calendar">Calendar</a>
+      <a href="#card">Card</a>
+      <a href="#carousel">Carousel</a>
+      <a href="#chart">Chart</a>
+      <a href="#checkbox">Checkbox</a>
+      <a href="#code-block">Code Block</a>
+      <a href="#collapsible">Collapsible</a>
+      <a href="#combobox">Combobox</a>
+      <a href="#command">Command</a>
+      <a href="#context-menu">Context Menu</a>
+      <a href="#data-table">Data Table</a>
+      <a href="#date-picker">Date Picker</a>
+      <a href="#dialog">Dialog</a>
+      <a href="#direction">Direction</a>
+      <a href="#drawer">Drawer</a>
+      <a href="#dropdown-menu">Dropdown Menu</a>
+      <a href="#empty">Empty</a>
+      <a href="#field">Field</a>
+      <a href="#hover-card">Hover Card</a>
+      <a href="#input">Input</a>
+      <a href="#input-group">Input Group</a>
+      <a href="#input-otp">Input OTP</a>
+      <a href="#item">Item</a>
+      <a href="#kbd">Kbd</a>
+      <a href="#label">Label</a>
+      <a href="#marker">Marker</a>
+      <a href="#menubar">Menubar</a>
+      <a href="#message">Message</a>
+      <a href="#message-scroller">Message Scroller</a>
+      <a href="#native-select">Native Select</a>
+      <a href="#navigation-menu">Navigation Menu</a>
+      <a href="#pagination">Pagination</a>
+      <a href="#popover">Popover</a>
+      <a href="#progress">Progress</a>
+      <a href="#questionnaire">Questionnaire</a>
+      <a href="#radio-group">Radio Group</a>
+      <a href="#resizable">Resizable</a>
+      <a href="#scroll-area">Scroll Area</a>
+      <a href="#select">Select</a>
+      <a href="#separator">Separator</a>
+      <a href="#sheet">Sheet</a>
+      <a href="#sidebar-nav">Sidebar</a>
+      <a href="#skeleton">Skeleton</a>
+      <a href="#slider">Slider</a>
+      <a href="#spinner">Spinner</a>
+      <a href="#switch">Switch</a>
+      <a href="#table">Table</a>
+      <a href="#tabs">Tabs</a>
+      <a href="#textarea">Textarea</a>
+      <a href="#toast">Toast</a>
+      <a href="#toggle">Toggle</a>
+      <a href="#toggle-group">Toggle Group</a>
+      <a href="#tooltip">Tooltip</a>
+      <a href="#trace">Trace</a>
+      <a href="#typography">Typography</a>
+    </div>
+  </nav>
+
+  <main class="dx-main">
+
+    <!-- ══ Introduction ══ -->
+    <section class="dx-view" data-view="intro">
+      <header class="dx-head">
+        <h1 data-es="Componentes con el oficio de un panel de instrumentos">Components built like an instrument panel</h1>
+        <p data-es="Una colección de componentes web en HTML y CSS puro, inspirada en el diseño industrial de los años 60 a 80: superficies neutras, esquinas rectas, perillas, escalas graduadas y un naranja que solo se enciende cuando algo está vivo. Cada página muestra el componente funcionando y el código para copiarlo.">A collection of web components in plain HTML and CSS, inspired by industrial design from the 1960s to the 80s: neutral surfaces, square corners, knobs, graduated scales and an orange that only lights up when something is live. Every page shows the component working and the code to copy.</p>
+      </header>
+
+      <div class="dx-hero">
+        <div>
+          <div class="knob-unit">
+            <div class="knob signal lg" role="slider" tabindex="0" aria-label="Volume" aria-valuemin="0" aria-valuemax="10" aria-valuenow="6" data-step="0.5" data-target="hero-vu hero-l hero-r" style="--v:.6"><span class="knob-ticks"></span><span class="knob-cap"><span class="knob-mark"></span></span></div>
+            <span class="knob-label">Volume</span><output class="knob-val">6.0</output>
+          </div>
+          <div class="knob-unit">
+            <div class="knob select" role="slider" tabindex="0" aria-label="Source" aria-valuemin="0" aria-valuemax="3" aria-valuenow="1" style="--v:.3333; --tick: 90deg"><span class="knob-ticks"></span><span class="knob-cap"><span class="knob-mark"></span></span><span class="knob-pos"><span style="--a:-135deg">Phono</span><span class="on" style="--a:-45deg">Tuner</span><span style="--a:45deg">Tape</span><span style="--a:135deg">Aux</span></span></div>
+            <span class="knob-label">Source</span>
+          </div>
+        </div>
+        <div>
+          <div class="dial">
+            <div class="dial-track" role="slider" tabindex="0" aria-label="Frequency" aria-valuemin="88" aria-valuemax="108" aria-valuenow="98.4" data-step="0.1" style="--v:.52">
+              <div class="dial-nums"><span>88</span><span>92</span><span>96</span><span>100</span><span>104</span><span>108</span></div>
+              <div class="dial-scale"></div>
+              <span class="dial-needle"></span>
+            </div>
+            <div class="dial-foot"><span>FM</span><output>98.4</output><span>MHz</span></div>
+          </div>
+          <div class="dx-row">
+            <div class="gauge" id="hero-vu" role="meter" aria-label="Output level" aria-valuemin="0" aria-valuemax="10" style="--v:.6"><span class="gauge-arc"></span><span class="gauge-needle"></span><span class="gauge-hub"></span><span class="gauge-min">0</span><span class="gauge-name">VU</span><span class="gauge-max">10</span></div>
+            <div class="dx-levels">
+              <div class="level-row"><span>L</span><div class="level" id="hero-l" role="meter" aria-label="Left channel" style="--v:.6"></div></div>
+              <div class="level-row"><span>R</span><div class="level" id="hero-r" role="meter" aria-label="Right channel" style="--v:.6"></div></div>
+              <span class="dx-cap" data-es="Gira la perilla de volumen: la aguja y las barras la siguen.">Turn the volume knob: the needle and the bars follow it.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ol class="dx-install">
+        <li><b data-es="Tokens">Tokens</b><span data-es="Pega el bloque de <a href='#tokens'>tokens de color</a> en tu hoja de estilos. Incluye modo claro y oscuro.">Paste the <a href="#tokens">color tokens</a> block into your stylesheet. It covers light and dark mode.</span></li>
+        <li><b data-es="Tipografía">Type</b><span data-es="Carga Archivo (400, 500, 600 y 700) desde Google Fonts. El monoespaciado es el del sistema.">Load Archivo (400, 500, 600 and 700) from Google Fonts. Monospace is the system one.</span></li>
+        <li><b data-es="Componente">Component</b><span data-es="Abre un componente y copia su CSS y su HTML. Los que necesitan comportamiento traen una pestaña JS.">Open a component and copy its CSS and HTML. The ones that need behaviour come with a JS tab.</span></li>
+      </ol>
+
+      <div id="dx-index"></div>
+
+      <div class="dx-eyebrow" data-es="Reglas del sistema">System rules</div>
+      <dl class="dx-principles">
+        <div><dt data-es="El naranja es una luz piloto">Orange is a pilot light</dt><dd data-es="Marca lo vivo, lo activo o la acción principal. Una sola acción primaria naranja por vista.">It marks what is live, active or the main action. One orange primary action per view.</dd></div>
+        <div><dt data-es="Esquinas rectas">Square corners</dt><dd data-es="Radio cero en todo. Solo son redondos las perillas, los pilotos y los nodos de un proceso.">Zero radius everywhere. Only knobs, lamps and process nodes are round.</dd></div>
+        <div><dt data-es="Escalas graduadas">Graduated scales</dt><dd data-es="Todo valor continuo se lee contra una fila de marcas: perillas, barras, deslizadores y lecturas.">Every continuous value is read against a row of ticks: knobs, bars, sliders and readouts.</dd></div>
+        <div><dt data-es="Superficies en tres niveles">Three surface levels</dt><dd data-es="Papel de fondo, panel con borde encima, zona hundida dentro. Nunca dos iguales sin borde.">Paper behind, bordered panel on top, sunken area inside. Never two alike without a border.</dd></div>
+        <div><dt data-es="Lo seleccionado se hunde">Selected means sunken</dt><dd data-es="La pestaña o fila activa toma el color del fondo, o se invierte como una tecla pulsada.">The active tab or row takes the page colour, or inverts like a pressed key.</dd></div>
+        <div><dt data-es="Línea discontinua para crear">Dashed means create</dt><dd data-es="Un borde discontinuo siempre significa un hueco por llenar o una acción de alta.">A dashed border always means a gap to fill or something to add.</dd></div>
+        <div><dt data-es="Franja lateral para el estado">A side stripe for state</dt><dd data-es="De 2 a 5 px, a la izquierda o arriba, siempre acompañada de texto o glifo.">2 to 5 px, on the left or top, always paired with text or a glyph.</dd></div>
+        <div><dt data-es="Cifras tabulares">Tabular figures</dt><dd data-es="Todo número que cambia o se compara usa <code>tabular-nums</code>; los datos de máquina van en mono.">Any number that changes or gets compared uses <code>tabular-nums</code>; machine data is set in mono.</dd></div>
+      </dl>
+      <p class="dx-foot" data-es="Proyecto independiente de estudio. No está afiliado a Braun GmbH ni a shadcn/ui, y no usa sus marcas.">Independent study project. Not affiliated with Braun GmbH or shadcn/ui, and it does not use their trademarks.</p>
+    </section>
+
+    <!-- ══ Color tokens ══ -->
+    <section class="dx-view" data-view="tokens" hidden>
+      <header class="dx-head">
+        <p data-es="Los mismos nombres sirven para modo claro y oscuro; solo cambian los valores. Las muestras se ven en el tema activo. Un clic copia <code>var(--token)</code>.">The same names serve light and dark mode; only the values change. Swatches render in the active theme. One click copies <code>var(--token)</code>.</p>
+      </header>
+      <div class="dx-eyebrow" data-es="Base">Base</div>
+      <div class="dx-swatches" data-sw="base"></div>
+      <div class="dx-eyebrow" data-es="Estado">Status</div>
+      <div class="dx-swatches" data-sw="status"></div>
+      <div class="dx-eyebrow" data-es="Categoría, para gráficos y etiquetas">Category, for charts and labels</div>
+      <div class="dx-swatches" data-sw="cat"></div>
+      <div class="dx-eyebrow" data-es="Texto accesible">Accessible text</div>
+      <div class="dx-swatches" data-sw="text"></div>
+      <ul class="dx-rules">
+        <li data-es="En modo claro <code>--steel</code>, <code>--signal</code>, <code>--ok</code> y <code>--sev-medium</code> no alcanzan 4.5:1 como texto pequeño. Para letra se usan las variantes <code>-text</code>; los colores base quedan para relleno, borde, punto o franja.">In light mode <code>--steel</code>, <code>--signal</code>, <code>--ok</code> and <code>--sev-medium</code> fall short of 4.5:1 as small text. Use the <code>-text</code> variants for lettering; the base colours are for fills, borders, dots and stripes.</li>
+        <li data-es="El amarillo nunca va como texto en claro: se usa de relleno con <code>--ink</code> encima.">Yellow is never text in light mode: use it as a fill with <code>--ink</code> on top.</li>
+        <li data-es="Orden de series en un gráfico: ink, signal, blue, green, yellow, brown, teal.">Series order in a chart: ink, signal, blue, green, yellow, brown, teal.</li>
+        <li data-es="Los tintes se derivan con <code>color-mix</code> en lugar de crear tokens: 8–10 % sobre <code>--panel</code> para fondos, 45 % sobre <code>--line</code> para bordes.">Tints are derived with <code>color-mix</code> instead of new tokens: 8–10% over <code>--panel</code> for backgrounds, 45% over <code>--line</code> for borders.</li>
+        <li data-es="Cada componente con estado recibe su color en la variable local <code>--sc</code>, por ejemplo <code>style=&quot;--sc: var(--sev-critical)&quot;</code>.">A component with state takes its colour from the local variable <code>--sc</code>, for example <code>style="--sc: var(--sev-critical)"</code>.</li>
+      </ul>
+      <div class="dx-eyebrow" data-es="Bloque completo">Full block</div>
+      <div class="dx-ex" data-css="tokens"></div>
+    </section>

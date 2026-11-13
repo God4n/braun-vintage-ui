@@ -1,0 +1,606 @@
+
+    <!-- ════════════════════════════ INSTRUMENTS ════════════════════════════ -->
+
+    <!-- ══ Knob ══ -->
+    <style data-css="knob">
+      .knob-unit { display: inline-flex; flex-direction: column; align-items: center; gap: 3px; }
+      .knob { --size: 64px; --v: .5; position: relative; flex: none; width: calc(var(--size) + 30px); aspect-ratio: 1; display: grid; place-items: center; border-radius: 50%; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+      .knob:active { cursor: grabbing; }
+      /* Tick ring: a colour split at the current value, cut into ticks by three intersected masks (ticks, ring, 270° sweep). */
+      .knob-ticks { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from -136deg, var(--ink) calc(var(--v) * 270deg + 2deg), var(--rule) 0);
+        mask: repeating-conic-gradient(from -135.7deg, #000 0 1.4deg, transparent 1.4deg var(--tick, 13.5deg)), radial-gradient(closest-side, transparent calc(100% - 7px), #000 calc(100% - 7px) calc(100% - 1px), transparent calc(100% - 1px)), conic-gradient(from -137deg, #000 274deg, transparent 0); mask-composite: intersect; }
+      .knob-cap { width: var(--size); aspect-ratio: 1; border-radius: 50%; background: var(--panel); border: 1px solid var(--rule); box-shadow: inset 0 0 0 5px var(--panel), inset 0 0 0 6px var(--line); display: grid; justify-items: center; align-items: start; transform: rotate(calc(-135deg + var(--v) * 270deg)); }
+      .knob-mark { width: 2px; height: 30%; margin-top: 5px; background: var(--ink); }
+      .knob:focus-visible { outline: none; }
+      .knob:focus-visible .knob-cap { outline: 2px solid var(--signal); outline-offset: 2px; }
+      .knob.signal .knob-mark { background: var(--signal); }
+      .knob.signal .knob-ticks { background: conic-gradient(from -136deg, var(--signal) calc(var(--v) * 270deg + 2deg), var(--rule) 0); }
+      .knob.ink .knob-cap { background: var(--ink); border-color: var(--ink); box-shadow: inset 0 0 0 5px var(--ink), inset 0 0 0 6px var(--rule); }
+      .knob.ink .knob-mark { background: var(--paper); }
+      .knob.sm { --size: 38px; width: calc(var(--size) + 22px); }
+      .knob.sm .knob-ticks { mask: repeating-conic-gradient(from -136deg, #000 0 2deg, transparent 2deg 27deg), radial-gradient(closest-side, transparent calc(100% - 5px), #000 calc(100% - 5px) calc(100% - 1px), transparent calc(100% - 1px)), conic-gradient(from -137deg, #000 274deg, transparent 0); mask-composite: intersect; }
+      .knob.lg { --size: 92px; }
+      .knob[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+      .knob-label { font-size: 11px; color: var(--steel-text); }
+      .knob-val { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+      /* Rotary selector: labelled positions around the ring. Set --tick to 270deg / (positions - 1). */
+      .knob.select { margin: 18px 34px 10px; }
+      .knob-pos span { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(var(--a)) translateY(calc(var(--size) / -2 - 29px)) rotate(calc(-1 * var(--a))); font-size: 10.5px; color: var(--steel-text); white-space: nowrap; }
+      .knob-pos span.on { color: var(--ink); font-weight: 600; }
+    </style>
+    <section class="dx-view" data-view="knob" data-js="range" hidden>
+      <header class="dx-head"><p data-es="Control giratorio con un anillo de marcas que se llena hasta el valor actual. Se arrastra alrededor del centro o se mueve con las flechas del teclado. La variante naranja se reserva para el control principal del panel.">A rotary control with a ring of ticks that fills up to the current value. Drag around its centre or use the arrow keys. The orange variant is reserved for the main control of a panel.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <div class="knob-unit">
+          <div class="knob signal lg" role="slider" tabindex="0" aria-label="Volume" aria-valuemin="0" aria-valuemax="10" aria-valuenow="6.0" data-step="0.5" style="--v:.6"><span class="knob-ticks"></span><span class="knob-cap"><span class="knob-mark"></span></span></div>
+          <span class="knob-label">Volume</span><output class="knob-val">6.0</output>
+        </div>
+        <div class="knob-unit">
+          <div class="knob" role="slider" tabindex="0" aria-label="Bass" aria-valuemin="-6" aria-valuemax="6" aria-valuenow="2" style="--v:.6667"><span class="knob-ticks"></span><span class="knob-cap"><span class="knob-mark"></span></span></div>
+          <span class="knob-label">Bass</span><output class="knob-val">2</output>
+        </div>
+        <div class="knob-unit">
+          <div class="knob" role="slider" tabindex="0" aria-label="Treble" aria-valuemin="-6" aria-valuemax="6" aria-valuenow="-1" style="--v:.4167"><span class="knob-ticks"></span><span class="knob-cap"><span class="knob-mark"></span></span></div>
+          <span class="knob-label">Treble</span><output class="knob-val">-1</output>
+        </div>
+        <div class="knob-unit">
+          <div class="knob ink" role="slider" tabindex="0" aria-label="Balance" aria-valuemin="-10" aria-valuemax="10" aria-valuenow="0" style="--v:.5"><span class="knob-ticks"></span><span class="knob-cap"><span class="knob-mark"></span></span></div>
+          <span class="knob-label">Balance</span><output class="knob-val">0</output>
+        </div>
+        <div class="knob-unit">
+          <div class="knob sm" role="slider" tabindex="0" aria-label="Gain" aria-valuemin="0" aria-valuemax="10" aria-valuenow="3" style="--v:.3"><span class="knob-ticks"></span><span class="knob-cap"><span class="knob-mark"></span></span></div>
+          <span class="knob-label">Gain</span><output class="knob-val">3</output>
+        </div>
+      </div></div>
+      <div class="dx-eyebrow" data-es="Selector giratorio">Rotary selector</div>
+      <div class="dx-ex"><div class="dx-stage">
+        <div class="knob-unit">
+          <div class="knob select" role="slider" tabindex="0" aria-label="Source" aria-valuemin="0" aria-valuemax="3" aria-valuenow="1" style="--v:.3333; --tick: 90deg"><span class="knob-ticks"></span><span class="knob-cap"><span class="knob-mark"></span></span><span class="knob-pos"><span style="--a:-135deg">Phono</span><span class="on" style="--a:-45deg">Tuner</span><span style="--a:45deg">Tape</span><span style="--a:135deg">Aux</span></span></div>
+          <span class="knob-label">Source</span>
+        </div>
+        <div class="knob-unit">
+          <div class="knob select ink" role="slider" tabindex="0" aria-label="Speed" aria-valuemin="0" aria-valuemax="2" aria-valuenow="0" style="--v:0; --tick: 135deg"><span class="knob-ticks"></span><span class="knob-cap"><span class="knob-mark"></span></span><span class="knob-pos"><span class="on" style="--a:-135deg">33</span><span style="--a:0deg">45</span><span style="--a:135deg">78</span></span></div>
+          <span class="knob-label">Speed</span>
+        </div>
+      </div></div>
+      <script data-js="range">
+        // One engine for every [role="slider"]: knobs (by angle), dials and sliders (x), faders (data-axis="y").
+        // It writes the position to --v (0–1), keeps aria-valuenow in sync and fills the nearest <output>.
+        (function () {
+          const num = (el, name, fallback) => parseFloat(el.getAttribute(name) ?? fallback);
+          function setRatio(el, ratio) {
+            const min = num(el, 'aria-valuemin', 0), max = num(el, 'aria-valuemax', 100), step = num(el, 'data-step', 1);
+            const decimals = (String(step).split('.')[1] || '').length;
+            const value = Math.min(max, Math.max(min, min + Math.round(Math.min(1, Math.max(0, ratio)) * (max - min) / step) * step));
+            const v = (value - min) / (max - min);
+            el.style.setProperty('--v', v);
+            el.setAttribute('aria-valuenow', value.toFixed(decimals));
+            const out = el.parentElement.querySelector('output');
+            if (out) out.textContent = value.toFixed(decimals);
+            el.querySelectorAll('.knob-pos span').forEach((s, i) => s.classList.toggle('on', i === Math.round((value - min) / step)));
+            (el.dataset.target || '').split(' ').filter(Boolean).forEach(id => document.getElementById(id)?.style.setProperty('--v', v));
+            el.dispatchEvent(new CustomEvent('change', { bubbles: true, detail: value }));
+          }
+          function ratioAt(el, e) {
+            const r = el.getBoundingClientRect();
+            if (el.classList.contains('knob')) {
+              const angle = Math.atan2(e.clientX - r.left - r.width / 2, r.top + r.height / 2 - e.clientY) * 180 / Math.PI;
+              return (Math.max(-135, Math.min(135, angle)) + 135) / 270;
+            }
+            return el.dataset.axis === 'y' ? 1 - (e.clientY - r.top) / r.height : (e.clientX - r.left) / r.width;
+          }
+          document.addEventListener('pointerdown', e => {
+            const el = e.target.closest('[role="slider"]');
+            if (!el || el.getAttribute('aria-disabled') === 'true') return;
+            e.preventDefault(); el.focus(); el.setPointerCapture(e.pointerId);
+            setRatio(el, ratioAt(el, e));
+            const move = ev => {
+              const next = ratioAt(el, ev), now = parseFloat(el.style.getPropertyValue('--v'));
+              if (!el.classList.contains('knob') || Math.abs(next - now) < .5) setRatio(el, next);   // a knob never jumps across its gap
+            };
+            const stop = () => { el.removeEventListener('pointermove', move); el.removeEventListener('pointerup', stop); el.removeEventListener('pointercancel', stop); };
+            el.addEventListener('pointermove', move); el.addEventListener('pointerup', stop); el.addEventListener('pointercancel', stop);
+          });
+          document.addEventListener('keydown', e => {
+            const el = e.target.closest && e.target.closest('[role="slider"]');
+            const dir = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[e.key];
+            if (!el || el.getAttribute('aria-disabled') === 'true' || (!dir && e.key !== 'Home' && e.key !== 'End')) return;
+            e.preventDefault();
+            const min = num(el, 'aria-valuemin', 0), max = num(el, 'aria-valuemax', 100), step = num(el, 'data-step', 1);
+            setRatio(el, e.key === 'Home' ? 0 : e.key === 'End' ? 1 : (num(el, 'aria-valuenow', min) + dir * step - min) / (max - min));
+          });
+        })();
+      </script>
+      <ul class="dx-rules">
+        <li data-es="El valor vive en la variable <code>--v</code> (de 0 a 1): gira la tapa y llena el anillo. El rango real va en <code>aria-valuemin</code>, <code>aria-valuemax</code> y <code>data-step</code>.">The value lives in the <code>--v</code> variable (0 to 1): it turns the cap and fills the ring. The real range goes in <code>aria-valuemin</code>, <code>aria-valuemax</code> and <code>data-step</code>.</li>
+        <li data-es="Una sola perilla <code>.signal</code> por panel. Las demás usan tinta.">One <code>.signal</code> knob per panel. The rest use ink.</li>
+        <li data-es="<code>data-target=&quot;id&quot;</code> copia el valor a otro elemento, por ejemplo un medidor de aguja.">Add <code>data-target="id"</code> to copy the value to another element, for example a gauge.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Dial ══ -->
+    <style data-css="dial">
+      .dial { background: var(--panel); border: 1px solid var(--rule); padding: 12px 24px 10px; min-width: 0; }
+      .dial-track { --v: .5; position: relative; cursor: ew-resize; touch-action: none; user-select: none; -webkit-user-select: none; }
+      .dial-nums { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--steel-text); font-variant-numeric: tabular-nums; padding: 3px 0; }
+      .dial-nums span { width: 0; display: flex; justify-content: center; }
+      /* Three tick layers: majors (full height), halves and minors. --majors and --minors set how many intervals fit. */
+      .dial-scale { height: 18px; background:
+        repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px calc((100% - 1px) / var(--majors, 5))) bottom / 100% 100% no-repeat,
+        repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px calc((100% - 1px) / var(--majors, 5) / 2)) bottom / 100% 60% no-repeat,
+        repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px calc((100% - 1px) / var(--minors, 50))) bottom / 100% 35% no-repeat; }
+      .dial-scale.flip { background-position: top; margin-top: 3px; }
+      .dial-needle { position: absolute; top: 0; bottom: 0; left: calc(var(--v) * (100% - 1px)); width: 2px; margin-left: -.5px; background: var(--signal); pointer-events: none; }
+      .dial-track:focus-visible { outline-offset: 4px; }
+      .dial-foot { display: flex; align-items: baseline; gap: 7px; margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--line); font-size: 11px; color: var(--steel-text); }
+      .dial-foot output { margin-left: auto; font-size: 22px; font-weight: 600; line-height: 1; letter-spacing: -.3px; color: var(--ink); font-variant-numeric: tabular-nums; }
+    </style>
+    <section class="dx-view" data-view="dial" data-js="range" hidden>
+      <header class="dx-head"><p data-es="La escala de sintonía de un receptor: marcas mayores y menores, cifras en mono y una aguja naranja que marca el valor. Se arrastra a lo largo de la escala.">The tuning scale of a receiver: major and minor ticks, figures in mono and an orange needle that marks the value. Drag along the scale.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="dial">
+          <div class="dial-track" role="slider" tabindex="0" aria-label="Frequency" aria-valuemin="88" aria-valuemax="108" aria-valuenow="98.4" data-step="0.1" style="--v:.52">
+            <div class="dial-nums"><span>88</span><span>92</span><span>96</span><span>100</span><span>104</span><span>108</span></div>
+            <div class="dial-scale"></div>
+            <span class="dial-needle"></span>
+          </div>
+          <div class="dial-foot"><span>FM</span><output>98.4</output><span>MHz</span></div>
+        </div>
+        <div class="dial">
+          <div class="dial-track" role="slider" tabindex="0" aria-label="Wavelength" aria-valuemin="0" aria-valuemax="100" aria-valuenow="35" style="--v:.35">
+            <div class="dial-nums"><span>88</span><span>92</span><span>96</span><span>100</span><span>104</span><span>108</span></div>
+            <div class="dial-scale"></div>
+            <div class="dial-scale flip" style="--majors: 4; --minors: 20"></div>
+            <div class="dial-nums"><span>530</span><span>800</span><span>1070</span><span>1340</span><span>1600</span></div>
+            <span class="dial-needle"></span>
+          </div>
+        </div>
+      </div></div>
+      <ul class="dx-rules">
+        <li data-es="<code>--majors</code> es el número de intervalos entre cifras y <code>--minors</code> el de marcas pequeñas. Pon tantas cifras como mayores más una.">Set <code>--majors</code> to the number of intervals between figures and <code>--minors</code> to the number of small ones. Write one more figure than majors.</li>
+        <li data-es="Con <code>.flip</code> la escala cuelga hacia abajo: dos bandas comparten una sola aguja.">With <code>.flip</code> the scale hangs downwards, so two bands share one needle.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Fader ══ -->
+    <style data-css="fader">
+      .fader-bank { display: inline-flex; gap: 4px; padding: 18px 14px 12px; background: var(--panel); border: 1px solid var(--rule); max-width: 100%; overflow-x: auto; }
+      .fader { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 48px; flex: none; }
+      .fader-track { --v: .5; position: relative; width: 100%; height: 150px; cursor: ns-resize; touch-action: none; background:
+        repeating-linear-gradient(0deg, var(--rule) 0 1px, transparent 1px calc((100% - 1px) / 12)) left / 9px 100% no-repeat,
+        repeating-linear-gradient(0deg, var(--rule) 0 1px, transparent 1px calc((100% - 1px) / 12)) right / 9px 100% no-repeat; }
+      .fader-track::before { content: ""; position: absolute; left: calc(50% - 2px); top: 0; bottom: 0; width: 4px; background: var(--inset); }
+      .fader-cap { position: absolute; left: calc(50% - 13px); bottom: calc(var(--v) * (100% - 1px) - 7px); width: 26px; height: 15px; border: 1px solid var(--rule); background: linear-gradient(var(--ink), var(--ink)) center / 14px 1px no-repeat var(--panel); }
+      .fader.signal .fader-cap { background: linear-gradient(var(--signal), var(--signal)) center / 14px 2px no-repeat var(--panel); }
+      .fader-track:focus-visible { outline-offset: 4px; }
+      .fader output { font-size: 11.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+      .fader-label { font-family: var(--mono); font-size: 10px; color: var(--steel-text); }
+    </style>
+    <section class="dx-view" data-view="fader" data-js="range" hidden>
+      <header class="dx-head"><p data-es="Deslizador vertical con marcas a ambos lados de la ranura, como el banco de un ecualizador. Úsalo cuando varios valores se comparan de un vistazo.">A vertical slider with ticks on both sides of the slot, like an equaliser bank. Use it when several values are compared at a glance.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <div class="fader-bank">
+          <div class="fader"><div class="fader-track" role="slider" tabindex="0" data-axis="y" aria-label="60 Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="4" style="--v:.6667"><span class="fader-cap"></span></div><output>4</output><span class="fader-label">60</span></div>
+          <div class="fader"><div class="fader-track" role="slider" tabindex="0" data-axis="y" aria-label="250 Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="1" style="--v:.5417"><span class="fader-cap"></span></div><output>1</output><span class="fader-label">250</span></div>
+          <div class="fader"><div class="fader-track" role="slider" tabindex="0" data-axis="y" aria-label="1 kHz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="-2" style="--v:.4167"><span class="fader-cap"></span></div><output>-2</output><span class="fader-label">1k</span></div>
+          <div class="fader"><div class="fader-track" role="slider" tabindex="0" data-axis="y" aria-label="4 kHz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0" style="--v:.5"><span class="fader-cap"></span></div><output>0</output><span class="fader-label">4k</span></div>
+          <div class="fader"><div class="fader-track" role="slider" tabindex="0" data-axis="y" aria-label="12 kHz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="3" style="--v:.625"><span class="fader-cap"></span></div><output>3</output><span class="fader-label">12k</span></div>
+          <div class="fader signal"><div class="fader-track" role="slider" tabindex="0" data-axis="y" aria-label="Master" aria-valuemin="0" aria-valuemax="10" aria-valuenow="7" style="--v:.7"><span class="fader-cap"></span></div><output>7</output><span class="fader-label">Master</span></div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- ══ Gauge ══ -->
+    <style data-css="gauge">
+      .gauge { --v: .5; --w: 190px; position: relative; flex: none; width: var(--w); height: calc(var(--w) * .65); overflow: hidden; background: var(--panel); border: 1px solid var(--rule); }
+      /* The arc is a circle whose centre (the pivot) sits 15% of the width above the bottom edge; --zone is where the red zone starts (0–1). */
+      .gauge-arc { position: absolute; left: 9%; width: 82%; top: calc(var(--w) * .09); aspect-ratio: 1; border-radius: 50%; background: conic-gradient(from -92deg, var(--rule) calc(2deg + var(--zone, .75) * 180deg), var(--sev-critical) 0 184deg, transparent 0);
+        mask: repeating-conic-gradient(from -90.6deg, #000 0 1.2deg, transparent 1.2deg 9deg), radial-gradient(closest-side, transparent calc(100% - 10px), #000 calc(100% - 10px) calc(100% - 1px), transparent calc(100% - 1px)); mask-composite: intersect; }
+      .gauge-needle { position: absolute; left: calc(50% - 1px); bottom: calc(var(--w) * .15); width: 2px; height: calc(var(--w) * .37); background: var(--signal); transform-origin: 50% 100%; transform: rotate(calc(-90deg + var(--v) * 180deg)); transition: transform .45s cubic-bezier(.2,.7,.2,1); }
+      .gauge-hub { position: absolute; left: calc(50% - 5px); bottom: calc(var(--w) * .15 - 5px); width: 10px; height: 10px; border-radius: 50%; background: var(--ink); }
+      .gauge-min, .gauge-max, .gauge-name { position: absolute; bottom: 4px; font-family: var(--mono); font-size: 10px; color: var(--steel-text); }
+      .gauge-min { left: 8px; } .gauge-max { right: 8px; }
+      .gauge-name { left: 0; right: 0; bottom: auto; top: 40%; text-align: center; font-family: var(--sans); font-weight: 600; letter-spacing: .4px; }
+      .gauge.sm { --w: 130px; }
+      .gauge-unit { display: inline-flex; flex-direction: column; align-items: center; gap: 6px; }
+      .gauge-unit output { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+      @media (prefers-reduced-motion: reduce) { .gauge-needle { transition: none; } }
+    </style>
+    <section class="dx-view" data-view="gauge" data-needs="knob" data-js="range" hidden>
+      <header class="dx-head"><p data-es="Medidor de aguja para una sola magnitud. El tramo final del arco se pinta de rojo para avisar de que se supera el margen seguro. Gira la perilla para moverlo.">A needle meter for a single quantity. The last stretch of the arc turns red to warn that the safe range is exceeded. Turn the knob to move it.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <div class="gauge-unit">
+          <div class="gauge" id="gauge-demo" role="meter" aria-label="Output level" aria-valuemin="0" aria-valuemax="10" aria-valuenow="6" style="--v:.6"><span class="gauge-arc"></span><span class="gauge-needle"></span><span class="gauge-hub"></span><span class="gauge-min">0</span><span class="gauge-name">VU</span><span class="gauge-max">10</span></div>
+        </div>
+        <div class="knob-unit">
+          <div class="knob signal" role="slider" tabindex="0" aria-label="Output" aria-valuemin="0" aria-valuemax="10" aria-valuenow="6.0" data-step="0.5" data-target="gauge-demo" style="--v:.6"><span class="knob-ticks"></span><span class="knob-cap"><span class="knob-mark"></span></span></div>
+          <span class="knob-label">Output</span><output class="knob-val">6.0</output>
+        </div>
+        <div class="gauge sm" role="meter" aria-label="Battery" aria-valuemin="0" aria-valuemax="9" aria-valuenow="7.2" style="--v:.8; --zone: 1"><span class="gauge-arc"></span><span class="gauge-needle"></span><span class="gauge-hub"></span><span class="gauge-min">0</span><span class="gauge-name">V</span><span class="gauge-max">9</span></div>
+      </div></div>
+      <ul class="dx-rules">
+        <li data-es="<code>--zone</code> indica dónde empieza la zona roja (0.75 por defecto). Con <code>--zone: 1</code> no hay zona roja.">Use <code>--zone</code> to set where the red zone starts (0.75 by default). With <code>--zone: 1</code> there is none.</li>
+        <li data-es="El tamaño depende de <code>--w</code>; todo lo demás se calcula a partir de ese ancho.">Size comes from <code>--w</code>; everything else is computed from that width.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Level meter ══ -->
+    <style data-css="level">
+      .level-row { display: grid; grid-template-columns: 14px minmax(0, 1fr); align-items: center; gap: 8px; font-family: var(--mono); font-size: 10.5px; color: var(--steel-text); }
+      /* Two stacked gradients (a mask over the unlit part, then the colour zones) cut into segments by a mask. */
+      .level { --v: .5; height: 10px; background: linear-gradient(90deg, transparent calc(var(--v) * 100%), var(--inset) 0), linear-gradient(90deg, var(--ink) 70%, var(--sev-medium) 0 88%, var(--sev-critical) 0); mask: repeating-linear-gradient(90deg, #000 0 5px, transparent 5px 8px); }
+      .level.plain { background: linear-gradient(90deg, var(--ink) calc(var(--v) * 100%), var(--inset) 0); }
+      .level.signal { background: linear-gradient(90deg, var(--signal) calc(var(--v) * 100%), var(--inset) 0); }
+      .level.tall { height: 18px; }
+      .level-scale { display: flex; justify-content: space-between; margin-left: 22px; font-family: var(--mono); font-size: 10px; color: var(--steel-text); }
+      .level-panel { background: var(--panel); border: 1px solid var(--rule); padding: 16px 18px 12px; display: flex; flex-direction: column; gap: 7px; }
+    </style>
+    <section class="dx-view" data-view="level" data-needs="knob" data-js="range" hidden>
+      <header class="dx-head"><p data-es="Barra de segmentos para una señal que cambia rápido. Los segmentos pasan de tinta a ámbar y a rojo al acercarse al límite.">A segmented bar for a fast-changing signal. Segments go from ink to amber to red as the level nears the limit.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <div class="level-panel" style="flex: 1 1 260px; max-width: 420px">
+          <div class="level-row"><span>L</span><div class="level" id="level-l" role="meter" aria-label="Left channel" style="--v:.62"></div></div>
+          <div class="level-row"><span>R</span><div class="level" id="level-r" role="meter" aria-label="Right channel" style="--v:.62"></div></div>
+          <div class="level-scale"><span>-40</span><span>-20</span><span>-10</span><span>-5</span><span>0</span><span>+3</span></div>
+        </div>
+        <div class="knob-unit">
+          <div class="knob" role="slider" tabindex="0" aria-label="Gain" aria-valuemin="0" aria-valuemax="100" aria-valuenow="62" data-target="level-l level-r" style="--v:.62"><span class="knob-ticks"></span><span class="knob-cap"><span class="knob-mark"></span></span></div>
+          <span class="knob-label">Gain</span><output class="knob-val">62</output>
+        </div>
+      </div></div>
+      <div class="dx-eyebrow" data-es="Variantes">Variants</div>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="level plain" role="meter" aria-label="Signal strength" style="--v:.8"></div>
+        <div class="level signal tall" role="meter" aria-label="Recording level" style="--v:.45"></div>
+      </div></div>
+    </section>
+
+    <!-- ══ Readout ══ -->
+    <style data-css="readout">
+      .cluster { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); background: var(--panel); border: 1px solid var(--rule); overflow: hidden; }
+      .readout { padding: 15px 18px 13px; border-left: 1px solid var(--line); margin-left: -1px; display: flex; flex-direction: column; gap: 3px; }
+      .readout .rl { font-size: 11px; color: var(--steel-text); }
+      .readout .rv { font-size: 36px; font-weight: 600; line-height: 1; letter-spacing: -.5px; font-variant-numeric: tabular-nums; display: flex; align-items: baseline; gap: 7px; }
+      .readout .rv small { font-size: 12px; font-weight: 500; color: var(--steel-text); letter-spacing: 0; }
+      .readout .scale { height: 7px; margin-top: 7px; background-image: repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 7px); border-bottom: 1px solid var(--line); }
+      .readout.alive .rv { color: var(--signal); }
+      .readout.alive .scale { background-image: repeating-linear-gradient(90deg, var(--signal) 0 1px, transparent 1px 7px); }
+    </style>
+    <section class="dx-view" data-view="readout" hidden>
+      <header class="dx-head"><p data-es="Una fila de cifras grandes, cada una con su escala graduada debajo. La variante viva pinta cifra y marcas en naranja.">A row of large figures, each with its graduated scale underneath. The live variant paints figure and ticks orange.</p></header>
+      <div class="dx-ex"><div class="dx-stage block">
+        <div class="cluster">
+          <div class="readout alive"><span class="rl">Now playing</span><span class="rv">98.4 <small>MHz</small></span><span class="scale"></span></div>
+          <div class="readout"><span class="rl">Listening today</span><span class="rv">3.2 <small>h</small></span><span class="scale"></span></div>
+          <div class="readout"><span class="rl">Records</span><span class="rv">214</span><span class="scale"></span></div>
+          <div class="readout"><span class="rl">Presets</span><span class="rv">12 <small>of 16</small></span><span class="scale"></span></div>
+        </div>
+      </div></div>
+      <ul class="dx-rules">
+        <li data-es="Como mucho una lectura <code>.alive</code> por grupo.">At most one <code>.alive</code> readout per group.</li>
+        <li data-es="La unidad va en <code>small</code>, gris y sin el ajuste de interletra de la cifra.">The unit goes in <code>small</code>, grey and without the figure's letter-spacing.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Meter ══ -->
+    <style data-css="meter">
+      .meter { background: var(--panel); border: 1px solid var(--rule); padding: 15px 18px 16px; }
+      .meter-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 11px; }
+      .meter-head h3 { font-size: 12px; font-weight: 600; }
+      .meter-head .total { margin-left: auto; font-size: 11.5px; color: var(--steel-text); font-variant-numeric: tabular-nums; }
+      .meter-ticks { height: 6px; margin-bottom: 5px; background-image: repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 10px); }
+      .meter-bar { display: flex; height: 16px; background: var(--inset); gap: 1px; }
+      .seg { min-width: 2px; background: var(--sc, var(--steel)); transition: flex-grow .45s cubic-bezier(.2,.7,.2,1); }
+      .meter-legend { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 12px; }
+      .meter-legend span { display: inline-flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--steel-text); font-variant-numeric: tabular-nums; }
+      .meter-legend i { width: 10px; height: 10px; display: inline-block; background: var(--sc, var(--steel)); }
+      .meter-legend em { font-style: normal; color: var(--ink); font-weight: 600; }
+      .minibar { display: flex; height: 6px; gap: 2px; }
+      .minibar i { display: block; min-width: 4px; background: var(--sc, var(--inset)); }
+    </style>
+    <section class="dx-view" data-view="meter" hidden>
+      <header class="dx-head"><p data-es="Barra segmentada que reparte un total entre categorías, con marcas de graduación encima y leyenda debajo. La versión mini cabe dentro de una tarjeta.">A segmented bar that splits a total between categories, with ticks above and a legend below. The mini version fits inside a card.</p></header>
+      <div class="dx-ex"><div class="dx-stage block">
+        <div class="meter">
+          <div class="meter-head"><h3>Library by format</h3><span class="total">214 records</span></div>
+          <div class="meter-ticks"></div>
+          <div class="meter-bar" role="img" aria-label="96 LP, 58 singles, 34 tapes, 26 other">
+            <span class="seg" style="flex-grow:96; --sc: var(--ink)"></span>
+            <span class="seg" style="flex-grow:58; --sc: var(--signal)"></span>
+            <span class="seg" style="flex-grow:34; --sc: var(--c-blue)"></span>
+            <span class="seg" style="flex-grow:26; --sc: var(--c-green)"></span>
+          </div>
+          <div class="meter-legend">
+            <span style="--sc: var(--ink)"><i></i>LP <em>96</em></span>
+            <span style="--sc: var(--signal)"><i></i>Singles <em>58</em></span>
+            <span style="--sc: var(--c-blue)"><i></i>Tapes <em>34</em></span>
+            <span style="--sc: var(--c-green)"><i></i>Other <em>26</em></span>
+          </div>
+        </div>
+        <div class="minibar" role="img" aria-label="Mini version" style="max-width:280px">
+          <i style="flex:96; --sc: var(--ink)"></i><i style="flex:58; --sc: var(--signal)"></i><i style="flex:34; --sc: var(--c-blue)"></i><i style="flex:26; --sc: var(--c-green)"></i>
+        </div>
+      </div></div>
+      <ul class="dx-rules">
+        <li data-es="El tamaño de cada segmento es su <code>flex-grow</code>; la transición de 450 ms anima los cambios.">Each segment's size is its <code>flex-grow</code>; the 450 ms transition animates changes.</li>
+        <li data-es="La leyenda repite cada valor en cifras: la barra nunca es la única fuente del dato.">The legend repeats every value as a figure: the bar is never the only source of the data.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Lamp ══ -->
+    <style data-css="lamp">
+      .lamp { width: 9px; height: 9px; border-radius: 50%; background: var(--steel); flex: none; display: inline-block; }
+      .lamp.live { background: var(--signal); box-shadow: 0 0 0 3px var(--signal-soft); animation: glow 2.6s ease-in-out infinite; }
+      .lamp.ok { background: var(--ok); }
+      .lamp.warn { background: var(--sev-medium); }
+      .lamp.error { background: var(--sev-critical); }
+      .status { display: inline-flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--steel-text); white-space: nowrap; }
+      .status.on { color: var(--ink); font-weight: 500; }
+      @keyframes glow { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+      @media (prefers-reduced-motion: reduce) { .lamp.live { animation: none; } }
+    </style>
+    <section class="dx-view" data-view="lamp" hidden>
+      <header class="dx-head"><p data-es="Un círculo de 9 px que indica el estado de algo. Solo el piloto vivo late; los demás son fijos. Siempre va acompañado de texto.">A 9 px circle that shows the state of something. Only the live lamp pulses; the rest are steady. It always comes with text.</p></header>
+      <div class="dx-ex"><div class="dx-stage" style="gap:14px 28px">
+        <span class="status on"><span class="lamp live"></span>On air</span>
+        <span class="status"><span class="lamp ok"></span>Ready</span>
+        <span class="status"><span class="lamp warn"></span>Paused</span>
+        <span class="status"><span class="lamp error"></span>No signal</span>
+        <span class="status"><span class="lamp"></span>Off</span>
+      </div></div>
+      <ul class="dx-rules">
+        <li data-es="El halo usa <code>--signal-soft</code>, no una sombra difusa.">The halo uses <code>--signal-soft</code>, not a blurred shadow.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Scale ══ -->
+    <style data-css="scale">
+      .ticks { height: 7px; background-image: repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 7px); }
+      .ticks.strong { background-image: repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px 7px); }
+      .ticks.wide { background-image: repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px 14px); }
+      .ticks.live { background-image: repeating-linear-gradient(90deg, var(--signal) 0 1px, transparent 1px 7px); }
+      .ticks.v { width: 7px; height: auto; align-self: stretch; background-image: repeating-linear-gradient(0deg, var(--rule) 0 1px, transparent 1px 7px); }
+      /* Ruler: majors, halves and minors that always end on a tick. */
+      .ruler { height: 16px; background:
+        repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px calc((100% - 1px) / var(--majors, 5))) bottom / 100% 100% no-repeat,
+        repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px calc((100% - 1px) / var(--majors, 5) / 2)) bottom / 100% 60% no-repeat,
+        repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px calc((100% - 1px) / var(--minors, 50))) bottom / 100% 35% no-repeat; }
+      .ruler.flip { background-position: top; }
+      .ruler-nums { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--steel-text); padding: 3px 0; }
+      .ruler-nums span { width: 0; display: flex; justify-content: center; }
+      /* A marked position on any scale: wrap it and set --v. */
+      .marked { --v: .5; position: relative; }
+      .marked::after { content: ""; position: absolute; top: -3px; bottom: 0; left: calc(var(--v) * (100% - 1px)); width: 2px; margin-left: -.5px; background: var(--signal); }
+      .scale-list { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: end; gap: 16px 14px; background: var(--panel); border: 1px solid var(--rule); padding: 18px 26px 18px 18px; }
+      .scale-list > span { font-family: var(--mono); font-size: 11px; color: var(--steel-text); }
+    </style>
+    <section class="dx-view" data-view="scale" hidden>
+      <header class="dx-head"><p data-es="Las marcas de graduación son el motivo del sistema. Son gradientes repetidos, sin imágenes: se añaden a lecturas, barras, deslizadores y separadores para que un valor se lea contra una escala.">Tick marks are the motif of the system. They are repeating gradients, no images: add them to readouts, bars, sliders and separators so a value is read against a scale.</p></header>
+      <div class="dx-ex"><div class="dx-stage block">
+        <div class="scale-list">
+          <span>.ticks</span><div class="ticks"></div>
+          <span>.ticks.strong</span><div class="ticks strong"></div>
+          <span>.ticks.wide</span><div class="ticks wide"></div>
+          <span>.ticks.live</span><div class="ticks live"></div>
+          <span>.ruler</span><div><div class="ruler-nums"><span>0</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100</span></div><div class="ruler"></div></div>
+          <span>.ruler.flip</span><div class="ruler flip" style="--majors: 4; --minors: 40"></div>
+          <span>.marked</span><div class="marked" style="--v:.68"><div class="ruler" style="--majors: 10; --minors: 100"></div></div>
+        </div>
+      </div></div>
+      <ul class="dx-rules">
+        <li data-es="Las marcas son información, no adorno: úsalas donde hay una magnitud que leer.">Ticks are information, not ornament: use them where there is a quantity to read.</li>
+        <li data-es="<code>.marked</code> añade una aguja naranja sobre cualquier escala en la posición <code>--v</code>.">Wrap any scale in <code>.marked</code> to add an orange needle at position <code>--v</code>.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Steps ══ -->
+    <style data-css="steps">
+      .method { container-type: inline-size; background: var(--panel); border: 1px solid var(--rule); }
+      .method-head { display: flex; align-items: baseline; gap: 10px; padding: 13px 18px 0; }
+      .method-head h3 { font-size: 13px; }
+      .method-head .total { margin-left: auto; font-size: 11.5px; color: var(--steel-text); font-variant-numeric: tabular-nums; }
+      .method-foot { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 18px; border-top: 1px solid var(--line); }
+      .method-foot .step-bar { flex: 1; }
+      /* Each node counts itself with a CSS counter: no numbers in the markup. */
+      .steps { list-style: none; margin: 0; padding: 16px 18px 18px; display: grid; grid-template-columns: repeat(var(--count, 5), minmax(0, 1fr)); counter-reset: st; }
+      .step { position: relative; display: flex; flex-direction: column; gap: 2px; min-width: 0; padding-right: 14px; counter-increment: st; }
+      .step::after { content: ""; position: absolute; top: 9px; left: 26px; right: 6px; height: 1px; background: var(--line); }
+      .step:last-child::after { display: none; }
+      .step.done::after { background: var(--ink); }
+      .sl { position: relative; z-index: 1; display: grid; place-content: center; width: 19px; height: 19px; margin-bottom: 6px; border-radius: 50%; border: 1.5px solid var(--rule); background: var(--panel); color: var(--steel-text); font-size: 10px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+      .sl::before { content: counter(st); }
+      .st-title { display: block; max-width: 100%; margin: 0; padding: 0; background: none; border: none; font: inherit; font-size: 12.5px; font-weight: 600; text-align: left; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      button.st-title { cursor: pointer; }
+      button.st-title:hover { text-decoration: underline; text-underline-offset: 3px; }
+      .smeta { font-size: 11px; color: var(--steel-text); font-variant-numeric: tabular-nums; }
+      .sdesc { margin-top: 3px; max-width: 44ch; font-size: 11.5px; line-height: 1.45; color: var(--steel-text); }
+      .step.pending .st-title { color: var(--steel-text); font-weight: 500; }
+      .step.done .sl { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+      .step.done .sl::before { content: "✓"; }
+      .step.active .sl { background: var(--signal); border-color: var(--signal); color: var(--on-signal); box-shadow: 0 0 0 4px color-mix(in srgb, var(--signal) 22%, transparent); animation: lampPulse 1.6s ease-in-out infinite; }
+      .step.stopped .sl { background: var(--sev-medium); border-color: var(--sev-medium); color: var(--on-signal); font-size: 8px; letter-spacing: -.5px; }
+      .step.stopped .sl::before { content: "II"; }
+      .step.error .sl { background: var(--sev-critical); border-color: var(--sev-critical); color: #fff; }
+      .step.error .sl::before { content: "!"; }
+      .step.error .smeta { color: var(--sev-critical); }
+      @keyframes lampPulse { 50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--signal) 8%, transparent); } }
+      /* Vertical: .steps.v, and automatically when the box itself is narrow (container query). */
+      .steps.v { grid-template-columns: minmax(0, 1fr); }
+      .steps.v .step { display: grid; grid-template-columns: 19px minmax(0, 1fr); grid-template-areas: "sl t" "sl m" "sl d"; align-content: start; column-gap: 12px; padding: 0 0 18px; }
+      .steps.v .step:last-child { padding-bottom: 0; }
+      .steps.v .sl { grid-area: sl; align-self: start; margin: 0; }
+      .steps.v .st-title { grid-area: t; }
+      .steps.v .smeta { grid-area: m; }
+      .steps.v .sdesc { grid-area: d; }
+      .steps.v .step::after { top: 23px; bottom: 4px; left: 9px; right: auto; width: 1px; height: auto; }
+      @container (max-width: 520px) {
+        .steps { grid-template-columns: minmax(0, 1fr); }
+        .steps .step { display: grid; grid-template-columns: 19px minmax(0, 1fr); grid-template-areas: "sl t" "sl m" "sl d"; align-content: start; column-gap: 12px; padding: 0 0 18px; }
+        .steps .step:last-child { padding-bottom: 0; }
+        .steps .sl { grid-area: sl; align-self: start; margin: 0; }
+        .steps .st-title { grid-area: t; }
+        .steps .smeta { grid-area: m; }
+        .steps .sdesc { grid-area: d; }
+        .steps .step::after { top: 23px; bottom: 4px; left: 9px; right: auto; width: 1px; height: auto; }
+      }
+      /* Scale variant: the process is read against a ruler with one major tick per step and an orange needle. */
+      .step-scale { --v: 0; --gaps: 4; padding: 20px 30px 16px; }
+      .step-ruler { position: relative; height: 16px; background:
+        repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px calc((100% - 1px) / var(--gaps))) bottom / 100% 100% no-repeat,
+        repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px calc((100% - 1px) / var(--gaps) / 5)) bottom / 100% 45% no-repeat; }
+      .step-ruler::before { content: ""; position: absolute; left: 0; bottom: 0; width: calc(var(--v) * (100% - 1px)); height: 3px; background: var(--ink); transition: width .45s cubic-bezier(.2,.7,.2,1); }
+      .step-ruler::after { content: ""; position: absolute; top: -4px; bottom: 0; left: calc(var(--v) * (100% - 1px)); width: 2px; margin-left: -.5px; background: var(--signal); transition: left .45s cubic-bezier(.2,.7,.2,1); }
+      .step-labels { list-style: none; margin: 9px 0 0; padding: 0; display: flex; justify-content: space-between; }
+      .sstep { width: 0; display: flex; justify-content: center; white-space: nowrap; font-size: 11.5px; color: var(--steel-text); }
+      .sstep.done { color: var(--ink); }
+      .sstep.active { color: var(--ink); font-weight: 600; }
+      /* Compact bar: one segment per step, for a summary line. */
+      .step-bar { display: flex; gap: 3px; }
+      .step-bar i { flex: 1; height: 8px; background: var(--inset); }
+      .step-bar i.done { background: var(--ink); }
+      .step-bar i.active { background: var(--signal); }
+      @media (prefers-reduced-motion: reduce) { .step.active .sl { animation: none; } .step-ruler::before, .step-ruler::after { transition: none; } }
+    </style>
+    <section class="dx-view" data-view="steps" data-needs="button" hidden>
+      <header class="dx-head"><p data-es="Un proceso en etapas. Cada nodo se numera solo con un contador CSS y la línea que los une se rellena de tinta a medida que avanza. Hay versión horizontal, vertical con descripciones, sobre una escala con aguja y una barra compacta. En una caja estrecha pasa a vertical sin media queries.">A process in stages. Each node numbers itself with a CSS counter and the line joining them fills with ink as the process advances. There is a horizontal version, a vertical one with descriptions, one on a scale with a needle and a compact bar. In a narrow box it turns vertical without media queries.</p></header>
+      <div class="dx-ex"><div class="dx-stage block">
+        <div class="method" data-interactive data-current="2">
+          <div class="method-head"><h3>Digitising a record</h3><span class="total">Step <span class="st-now">3</span> of 5</span></div>
+          <ol class="steps">
+            <li class="step done"><span class="sl"></span><button class="st-title" type="button">Clean</button><span class="smeta">2 min</span></li>
+            <li class="step done"><span class="sl"></span><button class="st-title" type="button">Set level</button><span class="smeta">1 min</span></li>
+            <li class="step active" aria-current="step"><span class="sl"></span><button class="st-title" type="button">Record side A</button><span class="smeta">21:05</span></li>
+            <li class="step pending"><span class="sl"></span><button class="st-title" type="button">Record side B</button><span class="smeta">21:05</span></li>
+            <li class="step pending"><span class="sl"></span><button class="st-title" type="button">Split tracks</button><span class="smeta">3 min</span></li>
+          </ol>
+          <div class="method-foot"><button class="btn" type="button" data-step-go="prev">Previous</button><div class="step-bar" role="progressbar" aria-label="Progress" aria-valuemin="1" aria-valuemax="5" aria-valuenow="3"><i class="done"></i><i class="done"></i><i class="active"></i><i></i><i></i></div><button class="btn btn-primary" type="button" data-step-go="next">Next</button></div>
+        </div>
+
+        <div class="method">
+          <div class="method-head"><h3>Repairing a receiver</h3></div>
+          <ol class="steps v">
+            <li class="step done"><span class="sl"></span><b class="st-title">Received</b><span class="smeta">Nov 4</span><span class="sdesc">Logged with a photo of the serial plate.</span></li>
+            <li class="step done"><span class="sl"></span><b class="st-title">Diagnosed</b><span class="smeta">Nov 6</span><span class="sdesc">Dial lamp and tuner capacitor need replacing.</span></li>
+            <li class="step stopped"><span class="sl"></span><b class="st-title">Parts ordered</b><span class="smeta">Waiting for supplier</span><span class="sdesc">Expected on Nov 14.</span></li>
+            <li class="step pending"><span class="sl"></span><b class="st-title">Repaired</b><span class="smeta">Pending</span></li>
+            <li class="step pending"><span class="sl"></span><b class="st-title">Returned</b><span class="smeta">Pending</span></li>
+          </ol>
+        </div>
+
+        <div class="method">
+          <div class="method-head"><h3>States</h3></div>
+          <ol class="steps">
+            <li class="step done"><span class="sl"></span><b class="st-title">Done</b><span class="smeta">Finished</span></li>
+            <li class="step active"><span class="sl"></span><b class="st-title">Active</b><span class="smeta">In progress</span></li>
+            <li class="step stopped"><span class="sl"></span><b class="st-title">Paused</b><span class="smeta">Waiting</span></li>
+            <li class="step error"><span class="sl"></span><b class="st-title">Failed</b><span class="smeta">Needs attention</span></li>
+            <li class="step pending"><span class="sl"></span><b class="st-title">Pending</b><span class="smeta">Not started</span></li>
+          </ol>
+        </div>
+
+        <div class="method" data-interactive data-current="1">
+          <div class="method-head"><h3>Calibration</h3><span class="total">Step <span class="st-now">2</span> of 5</span></div>
+          <div class="step-scale" style="--v:.25">
+            <div class="step-ruler"></div>
+            <ol class="step-labels">
+              <li class="sstep done">Clean</li><li class="sstep active" aria-current="step">Level</li><li class="sstep">Bias</li><li class="sstep">Test</li><li class="sstep">Save</li>
+            </ol>
+          </div>
+          <div class="method-foot"><button class="btn" type="button" data-step-go="prev">Previous</button><button class="btn btn-primary" type="button" data-step-go="next">Next</button></div>
+        </div>
+      </div>
+      <script data-js="steps">
+        // A .method[data-interactive] moves through its steps. Buttons with data-step-go="prev|next" step
+        // through them and a click on a step's title jumps to it. State classes, aria-current, the
+        // needle (--v) and the "Step n of N" counter all follow the current index.
+        (function () {
+          function setStep(box, index) {
+            const groups = Array.from(box.querySelectorAll('.steps, .step-labels, .step-bar'));
+            const count = groups[0].children.length, i = Math.max(0, Math.min(count - 1, index));
+            box.dataset.current = i;
+            groups.forEach(group => Array.from(group.children).forEach((item, n) => {
+              item.classList.remove('done', 'active', 'pending', 'stopped', 'error');
+              if (n < i) item.classList.add('done'); else if (n === i) item.classList.add('active'); else if (item.matches('.step')) item.classList.add('pending');
+              if (n === i) item.setAttribute('aria-current', 'step'); else item.removeAttribute('aria-current');
+            }));
+            const scale = box.querySelector('.step-scale');
+            if (scale) scale.style.setProperty('--v', count > 1 ? i / (count - 1) : 0);
+            const bar = box.querySelector('.step-bar');
+            if (bar) bar.setAttribute('aria-valuenow', i + 1);
+            const now = box.querySelector('.st-now');
+            if (now) now.textContent = i + 1;
+            box.querySelector('[data-step-go="prev"]').disabled = i === 0;
+            box.querySelector('[data-step-go="next"]').disabled = i === count - 1;
+          }
+          document.addEventListener('click', e => {
+            const box = e.target.closest('.method[data-interactive]');
+            if (!box) return;
+            const go = e.target.closest('[data-step-go]'), title = e.target.closest('button.st-title');
+            const current = Number(box.dataset.current || 0);
+            if (go) setStep(box, current + (go.dataset.stepGo === 'next' ? 1 : -1));
+            else if (title) setStep(box, Array.from(title.closest('.steps').children).indexOf(title.closest('.step')));
+          });
+        })();
+      </script>
+      </div>
+      <ul class="dx-rules">
+        <li data-es="Estados: <code>.done</code>, <code>.active</code>, <code>.stopped</code>, <code>.error</code> y <code>.pending</code>. El número, la marca ✓, «II» o «!» del nodo salen del CSS; el marcado solo lleva un <code>&lt;span class=&quot;sl&quot;&gt;</code> vacío.">States: <code>.done</code>, <code>.active</code>, <code>.stopped</code>, <code>.error</code> and <code>.pending</code>. The number, ✓, “II” or “!” inside the node comes from CSS; the markup only holds an empty <code>&lt;span class="sl"&gt;</code>.</li>
+        <li data-es="<code>--count</code> fija el número de columnas en horizontal. <code>.steps.v</code> fuerza la versión vertical, que admite una descripción en <code>.sdesc</code>.">Set <code>--count</code> for the number of columns when horizontal. <code>.steps.v</code> forces the vertical version, which takes a description in <code>.sdesc</code>.</li>
+        <li data-es="Si los pasos son navegables, el título es un <code>&lt;button&gt;</code>; si no, un <code>&lt;b&gt;</code>. El paso actual lleva <code>aria-current=&quot;step&quot;</code>.">If the steps are navigable, the title is a <code>&lt;button&gt;</code>; otherwise a <code>&lt;b&gt;</code>. The current step carries <code>aria-current="step"</code>.</li>
+        <li data-es="En la variante de escala, <code>--v</code> es la posición de la aguja (0 a 1) y <code>--gaps</code> el número de pasos menos uno.">In the scale variant, <code>--v</code> is the needle position (0 to 1) and <code>--gaps</code> is the number of steps minus one.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Faceplate ══ -->
+    <style data-css="faceplate">
+      .faceplate { background: var(--panel); border-bottom: 1px solid var(--rule); }
+      .faceplate.fixed { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; }
+      .mission { display: flex; align-items: center; gap: 12px 16px; flex-wrap: wrap; padding: 12px 20px; }
+      .wordmark { font-weight: 700; font-size: 16px; letter-spacing: .3px; }
+      .model { font-size: 11px; color: var(--steel-text); padding-left: 10px; border-left: 1px solid var(--line); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .conn { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+      .face-btn { background: var(--paper); border: 1px solid var(--line); color: var(--ink); width: 30px; height: 26px; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; }
+      .face-btn:hover { border-color: var(--rule); }
+      .faceplate .tab-list { border: none; border-top: 1px solid var(--line); }
+      .cover { background: var(--panel); border: 1px solid var(--rule); padding: 18px 20px; display: flex; align-items: flex-start; gap: 14px 16px; flex-wrap: wrap; }
+      .cover-title { display: flex; flex-direction: column; gap: 8px; min-width: 0; flex: 1 1 260px; }
+      .cover h2 { font-size: 19px; }
+      .cover-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+      .cover .cref { font-size: 12px; color: var(--steel-text); font-family: var(--mono); }
+      .cover .cscope { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; width: 100%; padding-top: 12px; border-top: 1px solid var(--line); }
+      .scope-label { font-size: 10px; color: var(--steel-text); }
+    </style>
+    <section class="dx-view" data-view="faceplate" data-needs="lamp tabs button badge" data-js="tabs" hidden>
+      <header class="dx-head"><p data-es="El frontal del aparato: marca, modelo, piloto de estado y, debajo, las pestañas de vista. La portada presenta el elemento abierto con sus etiquetas y sus acciones.">The front of the device: wordmark, model, status lamp and the view tabs underneath. The cover introduces the open item with its tags and actions.</p></header>
+      <div class="dx-ex"><div class="dx-stage block">
+        <header class="faceplate" style="border: 1px solid var(--rule)">
+          <div class="mission">
+            <span class="wordmark">Studio</span>
+            <span class="model">Receiver · living room</span>
+            <div class="conn">
+              <span class="status on"><span class="lamp live"></span>On air</span>
+              <button class="face-btn" type="button" aria-label="Toggle theme">◐</button>
+            </div>
+          </div>
+          <div class="tab-list" role="tablist">
+            <button class="tab" type="button" role="tab" aria-selected="true"><span class="ind"></span>Now playing</button>
+            <button class="tab" type="button" role="tab" aria-selected="false"><span class="ind"></span>Library <span class="n">214</span></button>
+            <button class="tab" type="button" role="tab" aria-selected="false"><span class="ind"></span>Stations</button>
+          </div>
+        </header>
+        <div class="cover">
+          <div class="cover-title">
+            <h2>Evening jazz</h2>
+            <div class="cover-meta"><span class="badge">Playlist</span><span class="cref">18 tracks · 1 h 12 min</span><span class="status"><span class="lamp ok"></span>Ready</span></div>
+          </div>
+          <div class="btn-group">
+            <button class="btn" type="button">Share</button>
+            <button class="btn btn-primary" type="button">Play</button>
+          </div>
+          <div class="cscope"><span class="scope-label">Tags</span><span class="badge">Jazz</span><span class="badge">Vinyl</span><span class="badge strike">Live</span></div>
+        </div>
+      </div></div>
+      <ul class="dx-rules">
+        <li data-es="En una página real el frontal lleva <code>.faceplate.fixed</code> para quedar pegado arriba y ocupa todo el ancho, sin el borde del ejemplo.">On a real page the header takes <code>.faceplate.fixed</code> to stick to the top and spans the full width, without the example's border.</li>
+      </ul>
+    </section>

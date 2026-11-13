@@ -1,0 +1,418 @@
+
+    <!-- ══ Spinner ══ -->
+    <style data-css="spinner">
+      /* A ring of twelve ticks that fades around and turns one tick at a time. It takes the text colour. */
+      .spinner { display: inline-block; flex: none; width: 18px; aspect-ratio: 1; border-radius: 50%; background: conic-gradient(color-mix(in srgb, currentColor 10%, transparent), currentColor);
+        mask: repeating-conic-gradient(from -4deg, #000 0 8deg, transparent 8deg 30deg), radial-gradient(closest-side, transparent 52%, #000 54% 96%, transparent 98%); mask-composite: intersect; animation: spin 1s steps(12) infinite; }
+      .spinner.sm { width: 13px; }
+      .spinner.lg { width: 34px; }
+      .spinner.signal { color: var(--signal); }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      /* Scan: a needle sweeping a scale, for a search with no known end. */
+      .scan { position: relative; height: 8px; min-width: 120px; overflow: hidden; background: repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px 7px); }
+      .scan::after { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 2px; background: var(--signal); animation: scan 1.6s ease-in-out infinite alternate; }
+      @keyframes scan { to { left: calc(100% - 2px); } }
+      .loading { display: inline-flex; align-items: center; gap: 9px; font-size: 12px; color: var(--steel-text); }
+      @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 6s; } .scan::after { animation: none; left: 50%; } }
+    </style>
+    <section class="dx-view" data-view="spinner" data-needs="button" hidden>
+      <header class="dx-head"><p data-es="Indicador de carga: un anillo de doce marcas que gira de una en una. Para búsquedas sin final conocido, una aguja que barre una escala.">A loading indicator: a ring of twelve ticks turning one at a time. For searches with no known end, a needle sweeping a scale.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <span class="spinner sm" role="status" aria-label="Loading"></span>
+        <span class="spinner" role="status" aria-label="Loading"></span>
+        <span class="spinner lg" role="status" aria-label="Loading"></span>
+        <span class="spinner lg signal" role="status" aria-label="Loading"></span>
+        <span class="loading"><span class="spinner"></span>Loading library</span>
+        <button class="btn" type="button" disabled><span class="spinner sm"></span>Saving</button>
+        <div class="loading" style="flex: 1 1 200px; flex-direction: column; align-items: stretch; gap: 6px"><span>Scanning for stations</span><div class="scan" role="status" aria-label="Scanning"></div></div>
+      </div></div>
+    </section>
+
+    <!-- ══ Switch ══ -->
+    <style data-css="switch">
+      .switch { position: relative; flex: none; width: 38px; height: 22px; padding: 0; background: var(--inset); border: 1px solid var(--rule); cursor: pointer; transition: background-color .15s, border-color .15s; }
+      .switch span { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; background: var(--panel); border: 1px solid var(--rule); transition: transform .15s; }
+      .switch[aria-checked="true"] { background: var(--signal); border-color: var(--signal); }
+      .switch[aria-checked="true"] span { transform: translateX(16px); border-color: var(--signal); }
+      .switch:disabled { opacity: .45; cursor: not-allowed; }
+      .switch-row { display: inline-flex; align-items: center; gap: 9px; font-size: 12px; color: var(--steel-text); }
+      .switch-note { font-size: 11.5px; white-space: nowrap; }
+      .switch[aria-checked="true"] + .switch-note { color: var(--ok-text); }
+      @media (prefers-reduced-motion: reduce) { .switch, .switch span { transition: none; } }
+    </style>
+    <section class="dx-view" data-view="switch" hidden>
+      <header class="dx-head"><p data-es="Pista rectangular de 38 × 22 px con un tirador cuadrado. Encendido, la pista pasa a naranja y la nota contigua confirma el estado.">A 38 × 22 px rectangular track with a square thumb. When on, the track turns orange and the note beside it confirms the state.</p></header>
+      <div class="dx-ex"><div class="dx-stage block" style="align-items: flex-start">
+        <div class="switch-row"><span>Loudness</span><button class="switch" type="button" role="switch" aria-checked="true" aria-label="Loudness"><span></span></button><span class="switch-note">On below level 3</span></div>
+        <div class="switch-row"><span>Auto standby</span><button class="switch" type="button" role="switch" aria-checked="false" aria-label="Auto standby"><span></span></button><span class="switch-note">After 20 min of silence</span></div>
+        <div class="switch-row"><span>Dolby</span><button class="switch" type="button" role="switch" aria-checked="false" aria-label="Dolby" disabled><span></span></button><span class="switch-note">Tape only</span></div>
+      </div>
+      <script data-js="switch">
+        document.addEventListener('click', e => {
+          const s = e.target.closest('.switch');
+          if (s) s.setAttribute('aria-checked', s.getAttribute('aria-checked') !== 'true');
+        });
+      </script>
+      </div>
+    </section>
+
+    <!-- ══ Table ══ -->
+    <style data-css="table">
+      .table-wrap { overflow-x: auto; }
+      .table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+      .table th { padding: 8px 14px; border-bottom: 1px solid var(--line); text-align: left; font-size: 10.5px; font-weight: 500; color: var(--steel-text); white-space: nowrap; }
+      .table td { padding: 9px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+      .table tbody tr:last-child td { border-bottom: none; }
+      .table tbody tr:hover { background: var(--inset); }
+      .table .mono { font-family: var(--mono); font-size: 12px; }
+      .table .num { text-align: right; font-variant-numeric: tabular-nums; }
+      .table tfoot td { border-top: 1px solid var(--rule); border-bottom: none; font-weight: 600; }
+      .table caption { caption-side: bottom; padding: 9px 14px; border-top: 1px solid var(--line); text-align: left; font-size: 11px; color: var(--steel-text); }
+      /* Key–value pairs for record sheets. */
+      .kv { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 9px 16px; margin: 0; font-size: 12.5px; }
+      .kv dt { color: var(--steel-text); }
+      .kv dd { margin: 0; font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; }
+    </style>
+    <section class="dx-view" data-view="table" data-needs="card lamp" hidden>
+      <header class="dx-head"><p data-es="Tabla sin rayas verticales: cabeceras pequeñas en gris, filas separadas por una línea suave y cifras alineadas a la derecha. Para fichas, una rejilla de clave y valor.">A table without vertical rules: small grey headers, rows separated by a soft line and figures aligned right. For record sheets, a key–value grid.</p></header>
+      <div class="dx-ex"><div class="dx-stage block">
+        <div class="card"><div class="table-wrap">
+          <table class="table">
+            <caption>Presets on the FM band</caption>
+            <thead><tr><th>Slot</th><th>Station</th><th>State</th><th class="num">MHz</th><th class="num">Signal</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">01</td><td>Radio Uno</td><td><span class="status on"><span class="lamp live"></span>On air</span></td><td class="num">98.4</td><td class="num">71 dB</td></tr>
+              <tr><td class="mono">02</td><td>Jazz FM</td><td><span class="status"><span class="lamp ok"></span>Ready</span></td><td class="num">101.7</td><td class="num">64 dB</td></tr>
+              <tr><td class="mono">03</td><td>Clásica</td><td><span class="status"><span class="lamp warn"></span>Weak</span></td><td class="num">104.2</td><td class="num">22 dB</td></tr>
+              <tr><td class="mono">04</td><td>Radio Tres</td><td><span class="status"><span class="lamp"></span>Off air</span></td><td class="num">95.1</td><td class="num">0 dB</td></tr>
+            </tbody>
+            <tfoot><tr><td colspan="3">4 presets</td><td class="num" colspan="2">12 slots free</td></tr></tfoot>
+          </table>
+        </div></div>
+        <div class="card"><div class="card-body">
+          <dl class="kv"><dt>Model</dt><dd>Receiver 1000</dd><dt>Serial</dt><dd>R1000-04512</dd><dt>Bands</dt><dd>FM, MW, LW, SW × 8</dd><dt>Power</dt><dd>9 V · 6 × D cells</dd></dl>
+        </div></div>
+      </div></div>
+    </section>
+
+    <!-- ══ Tabs ══ -->
+    <style data-css="tabs">
+      .tabs { background: var(--panel); border: 1px solid var(--rule); min-width: 0; }
+      .tab-list { display: flex; overflow-x: auto; scrollbar-width: none; background: var(--panel); border: 1px solid var(--line); }
+      .tab-list::-webkit-scrollbar { display: none; }
+      .tabs > .tab-list { border: none; border-bottom: 1px solid var(--line); }
+      .tab { display: flex; align-items: center; gap: 9px; padding: 9px 15px; background: none; border: none; border-right: 1px solid var(--line); color: var(--steel-text); font-size: 12.5px; font-weight: 500; white-space: nowrap; cursor: pointer; }
+      .tab:hover { color: var(--ink); }
+      .tab .ind { width: 8px; height: 8px; flex: none; border: 1px solid var(--line); }
+      .tab .n { color: var(--steel-text); font-variant-numeric: tabular-nums; }
+      .tab[aria-selected="true"] { color: var(--ink); background: var(--paper); }
+      .tab[aria-selected="true"] .ind { background: var(--signal); border-color: var(--signal); }
+      /* Line variant: an orange underline instead of the square. */
+      .tab-list.line .tab { padding: 12px 18px; }
+      .tab-list.line .tab[aria-selected="true"] { box-shadow: inset 0 -2px 0 var(--signal); }
+      .tab-panel { padding: 16px 18px; font-size: 12.5px; line-height: 1.55; }
+    </style>
+    <section class="dx-view" data-view="tabs" hidden>
+      <header class="dx-head"><p data-es="La pestaña activa toma el color del fondo de página y enciende su indicador cuadrado. La variante de línea usa un subrayado naranja.">The active tab takes the page colour and lights its square indicator. The line variant uses an orange underline.</p></header>
+      <div class="dx-ex"><div class="dx-stage block">
+        <div class="tabs">
+          <div class="tab-list" role="tablist" aria-label="Record">
+            <button class="tab" type="button" role="tab" aria-selected="true" aria-controls="tab-p1"><span class="ind"></span>Tracks <span class="n">5</span></button>
+            <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="tab-p2"><span class="ind"></span>Credits</button>
+            <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="tab-p3"><span class="ind"></span>Notes</button>
+          </div>
+          <div class="tab-panel" id="tab-p1" role="tabpanel">So What, Freddie Freeloader, Blue in Green, All Blues and Flamenco Sketches.</div>
+          <div class="tab-panel" id="tab-p2" role="tabpanel" hidden>Miles Davis, trumpet. John Coltrane, tenor saxophone. Bill Evans, piano.</div>
+          <div class="tab-panel" id="tab-p3" role="tabpanel" hidden>First pressing. Light wear on the sleeve, clean surface.</div>
+        </div>
+        <div class="tab-list line" role="tablist" aria-label="Settings">
+          <button class="tab" type="button" role="tab" aria-selected="true">Account</button>
+          <button class="tab" type="button" role="tab" aria-selected="false">Devices</button>
+          <button class="tab" type="button" role="tab" aria-selected="false">Notifications</button>
+        </div>
+      </div>
+      <script data-js="tabs">
+        (function () {
+          function select(tab) {
+            tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]').forEach(t => {
+              const on = t === tab, panel = document.getElementById(t.getAttribute('aria-controls'));
+              t.setAttribute('aria-selected', on);
+              if (panel) panel.hidden = !on;
+            });
+          }
+          document.addEventListener('click', e => { const tab = e.target.closest('[role="tab"]'); if (tab) select(tab); });
+          document.addEventListener('keydown', e => {
+            const tab = e.target.closest && e.target.closest('[role="tab"]');
+            const dir = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
+            if (!tab || !dir) return;
+            const tabs = Array.from(tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]'));
+            const next = tabs[(tabs.indexOf(tab) + dir + tabs.length) % tabs.length];
+            next.focus(); select(next);
+          });
+        })();
+      </script>
+      </div>
+      <ul class="dx-rules">
+        <li data-es="Los contadores usan <code>tabular-nums</code> para no mover la fila cuando cambian.">Counters use <code>tabular-nums</code> so the row does not shift when they change.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Textarea ══ -->
+    <style data-css="textarea">
+      textarea.input { display: block; min-height: 84px; resize: vertical; line-height: 1.6; }
+      .field-foot { display: flex; align-items: baseline; gap: 10px; font-size: 11px; color: var(--steel-text); }
+      .field-count { margin-left: auto; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+      .field-count.over { color: var(--sev-critical); }
+    </style>
+    <section class="dx-view" data-view="textarea" data-needs="input field label card" hidden>
+      <header class="dx-head"><p data-es="Campo de varias líneas. Con <code>data-max</code>, un contador en mono indica cuánto queda y se pone rojo al pasarse.">A multi-line field. With <code>data-max</code>, a mono counter shows how much is left and turns red when exceeded.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="card"><div class="card-body">
+          <div class="field"><label class="label" for="ta-notes">Notes</label><textarea class="input" id="ta-notes" data-max="120">First pressing. Light wear on the sleeve.</textarea><div class="field-foot"><span>Shown on the record sheet.</span><span class="field-count">41 / 120</span></div></div>
+          <div class="field"><label class="label" for="ta-list">Tracklist</label><textarea class="input mono" id="ta-list" rows="3">A1  So What              9:22
+A2  Freddie Freeloader   9:46</textarea></div>
+        </div></div>
+      </div>
+      <script data-js="textarea">
+        document.addEventListener('input', e => {
+          const area = e.target.closest('textarea[data-max]');
+          const count = area && area.closest('.field').querySelector('.field-count');
+          if (!count) return;
+          count.textContent = area.value.length + ' / ' + area.dataset.max;
+          count.classList.toggle('over', area.value.length > Number(area.dataset.max));
+        });
+      </script>
+      </div>
+    </section>
+
+    <!-- ══ Toast ══ -->
+    <style data-css="toast">
+      .toasts { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 70; display: flex; flex-direction: column; gap: 8px; width: min(360px, calc(100vw - 32px)); }
+      .toast { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 2px 12px; padding: 10px 13px; background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--sc, var(--steel)); box-shadow: 0 4px 16px rgba(0,0,0,.12); font-size: 12.5px; line-height: 1.45; }
+      .toast.ok { --sc: var(--ok); }
+      .toast.warn { --sc: var(--sev-medium); }
+      .toast.error { --sc: var(--sev-critical); }
+      .toast-title { grid-column: 1; font-weight: 600; }
+      .toast-desc { grid-column: 1; font-size: 12px; color: var(--steel-text); }
+      .toast-action { grid-column: 2; grid-row: 1 / span 2; }
+      .toasts .toast { animation: toast-in .2s cubic-bezier(.2,.7,.2,1); }
+      @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } }
+      @media (prefers-reduced-motion: reduce) { .toasts .toast { animation: none; } }
+    </style>
+    <section class="dx-view" data-view="toast" data-needs="button" hidden>
+      <header class="dx-head"><p data-es="Aviso breve que confirma algo que acaba de pasar y se va solo. Aparece abajo a la derecha, con el borde izquierdo del color del estado y, si hace falta, una acción.">A short notice confirming something that just happened, which leaves on its own. It appears bottom right, with the left border in the status colour and, when needed, one action.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="btn-group">
+          <button class="btn" type="button" data-toast="Preset saved" data-desc="Jazz FM is now on slot 4." data-kind="ok">Success</button>
+          <button class="btn" type="button" data-toast="Record removed" data-desc="Kind of Blue left your library." data-action="Undo">With action</button>
+          <button class="btn" type="button" data-toast="Could not reach the receiver" data-desc="Check that it is on and try again." data-kind="error">Error</button>
+        </div>
+        <div class="toast ok"><span class="toast-title">Preset saved</span><span class="toast-desc">Jazz FM is now on slot 4.</span></div>
+        <div class="toast"><span class="toast-title">Record removed</span><span class="toast-desc">Kind of Blue left your library.</span><button class="btn btn-sm toast-action" type="button">Undo</button></div>
+        <div class="toast warn"><span class="toast-title">Battery at 15%</span></div>
+        <div class="toast error"><span class="toast-title">Could not reach the receiver</span><span class="toast-desc">Check that it is on and try again.</span></div>
+      </div>
+      <script data-js="toast">
+        // toast({ title, description, kind: 'ok' | 'warn' | 'error', action, duration })
+        function toast(options) {
+          let host = document.querySelector('.toasts');
+          if (!host) { host = document.createElement('div'); host.className = 'toasts'; host.setAttribute('aria-live', 'polite'); document.body.append(host); }
+          const el = document.createElement('div');
+          el.className = 'toast ' + (options.kind || '');
+          el.setAttribute('role', 'status');
+          const add = (cls, text) => { if (!text) return; const s = document.createElement('span'); s.className = cls; s.textContent = text; el.append(s); };
+          add('toast-title', options.title);
+          add('toast-desc', options.description);
+          if (options.action) {
+            const b = document.createElement('button');
+            b.type = 'button'; b.className = 'btn btn-sm toast-action'; b.textContent = options.action;
+            b.addEventListener('click', () => el.remove());
+            el.append(b);
+          }
+          host.append(el);
+          setTimeout(() => el.remove(), options.duration || 4000);
+        }
+        document.addEventListener('click', e => {
+          const b = e.target.closest('[data-toast]');
+          if (b) toast({ title: b.dataset.toast, description: b.dataset.desc, kind: b.dataset.kind, action: b.dataset.action });
+        });
+      </script>
+      </div>
+      <ul class="dx-rules">
+        <li data-es="Un error dice qué falló y qué hacer, sin disculpas.">An error says what failed and what to do, with no apology.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Toggle ══ -->
+    <style data-css="toggle">
+      .toggle { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-width: 32px; height: 32px; padding: 0 11px; background: var(--panel); border: 1px solid var(--line); color: var(--steel-text); font-size: 12.5px; font-weight: 500; white-space: nowrap; cursor: pointer; }
+      .toggle:hover { border-color: var(--rule); color: var(--ink); }
+      .toggle[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+      .toggle:disabled { opacity: .45; cursor: not-allowed; }
+      /* Lit variant: the key sinks and a square lamp turns on, for a state that stays active. */
+      .toggle.lit::before { content: ""; width: 8px; height: 8px; border: 1px solid var(--line); }
+      .toggle.lit[aria-pressed="true"] { background: var(--paper); border-color: var(--rule); color: var(--ink); }
+      .toggle.lit[aria-pressed="true"]::before { background: var(--signal); border-color: var(--signal); }
+    </style>
+    <section class="dx-view" data-view="toggle" hidden>
+      <header class="dx-head"><p data-es="Un botón de dos estados. Pulsado se invierte, como una tecla; la variante con luz se hunde y enciende un piloto cuadrado.">A two-state button. Pressed, it inverts like a key; the lit variant sinks and turns on a square lamp.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <button class="toggle" type="button" aria-pressed="true">Stereo</button>
+        <button class="toggle" type="button" aria-pressed="false">Mute</button>
+        <button class="toggle" type="button" aria-pressed="false" aria-label="Favourite">♥</button>
+        <button class="toggle lit" type="button" aria-pressed="true">Loudness</button>
+        <button class="toggle lit" type="button" aria-pressed="false">Record</button>
+        <button class="toggle" type="button" aria-pressed="false" disabled>Dolby</button>
+      </div>
+      <script data-js="toggle">
+        // A .toggle flips aria-pressed. Inside a .toggle-group with data-type="single" only one stays pressed.
+        document.addEventListener('click', e => {
+          const t = e.target.closest('.toggle');
+          if (!t) return;
+          const group = t.closest('.toggle-group');
+          if (group && group.dataset.type === 'single') group.querySelectorAll('.toggle').forEach(x => x.setAttribute('aria-pressed', x === t));
+          else t.setAttribute('aria-pressed', t.getAttribute('aria-pressed') !== 'true');
+        });
+      </script>
+      </div>
+    </section>
+
+    <!-- ══ Toggle Group ══ -->
+    <style data-css="toggle-group">
+      .toggle-group { display: inline-flex; flex-wrap: wrap; }
+      .toggle-group .toggle + .toggle { margin-left: -1px; }
+      .toggle-group .toggle:hover, .toggle-group .toggle[aria-pressed="true"] { position: relative; z-index: 1; }
+      /* Filter strip: each toggle carries a colour square and a count. */
+      .toggle i { width: 10px; height: 10px; background: var(--sc, var(--steel)); }
+      .toggle .n { font-variant-numeric: tabular-nums; opacity: .7; }
+    </style>
+    <section class="dx-view" data-view="toggle-group" data-needs="toggle" data-js="toggle" hidden>
+      <header class="dx-head"><p data-es="Varios conmutadores unidos en una pieza. Con <code>data-type=&quot;single&quot;</code> solo uno queda pulsado; sin él, se combinan.">Several toggles joined into one piece. With <code>data-type="single"</code> only one stays pressed; without it they combine.</p></header>
+      <div class="dx-ex"><div class="dx-stage block" style="align-items: flex-start">
+        <div class="toggle-group" role="group" aria-label="Sort by" data-type="single">
+          <button class="toggle" type="button" aria-pressed="true">Recent</button>
+          <button class="toggle" type="button" aria-pressed="false">Name</button>
+          <button class="toggle" type="button" aria-pressed="false">Year</button>
+        </div>
+        <div class="toggle-group" role="group" aria-label="Format">
+          <button class="toggle lit" type="button" aria-pressed="true">LP <span class="n">96</span></button>
+          <button class="toggle lit" type="button" aria-pressed="true">Singles <span class="n">58</span></button>
+          <button class="toggle lit" type="button" aria-pressed="false">Tapes <span class="n">34</span></button>
+        </div>
+        <div class="toggle-group" role="group" aria-label="Text style">
+          <button class="toggle" type="button" aria-pressed="true" aria-label="Bold"><b>B</b></button>
+          <button class="toggle" type="button" aria-pressed="false" aria-label="Italic"><em>I</em></button>
+          <button class="toggle" type="button" aria-pressed="false" aria-label="Underline"><u>U</u></button>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- ══ Tooltip ══ -->
+    <style data-css="tooltip">
+      /* Put the text in data-tip. CSS only: it shows on hover and on keyboard focus. */
+      [data-tip] { position: relative; }
+      [data-tip]::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 7px); z-index: 46; transform: translateX(-50%); padding: 4px 8px; background: var(--ink); color: var(--paper); font-family: var(--sans); font-size: 11px; font-weight: 500; line-height: 1.4; white-space: nowrap; pointer-events: none; display: none; }
+      [data-tip]:hover::after, [data-tip]:focus-visible::after { display: block; animation: tip-in .12s .3s both; }
+      @keyframes tip-in { from { opacity: 0; } }
+      [data-tip][data-tip-side="bottom"]::after { bottom: auto; top: calc(100% + 7px); }
+      [data-tip][data-tip-side="right"]::after { left: calc(100% + 7px); bottom: 50%; transform: translateY(50%); }
+    </style>
+    <section class="dx-view" data-view="tooltip" data-needs="button" hidden>
+      <header class="dx-head"><p data-es="Una etiqueta corta que aparece al pasar el cursor o al enfocar con el teclado. Invertida respecto al fondo y sin flecha.">A short label that appears on hover or keyboard focus. Inverted against the page and with no arrow.</p></header>
+      <div class="dx-ex"><div class="dx-stage" style="padding-block: 46px">
+        <button class="btn btn-icon" type="button" data-tip="Previous track" aria-label="Previous track">‹</button>
+        <button class="btn btn-icon" type="button" data-tip="Next track" aria-label="Next track">›</button>
+        <button class="btn" type="button" data-tip="Saves to the next free slot" data-tip-side="bottom">Save preset</button>
+        <button class="btn" type="button" data-tip="Shortcut: M" data-tip-side="right">Mute</button>
+      </div></div>
+      <ul class="dx-rules">
+        <li data-es="El tooltip repite o amplía el nombre del control; nunca contiene información imprescindible.">The tooltip repeats or extends the control's name; it never holds essential information.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Trace ══ -->
+    <style data-css="trace">
+      .trace { display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--rule); }
+      .trace-line { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 9px 14px; border-bottom: 1px solid var(--line); font-size: 12.5px; }
+      .trace > :last-child, .trace > :last-child > .trace-line:last-child { border-bottom: none; }
+      .trace-icon { width: 14px; flex: none; display: grid; place-content: center; font-size: 11px; color: var(--steel-text); }
+      .trace-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .trace-title code { padding: 1px 5px; font-family: var(--mono); font-size: 11.5px; background: var(--inset); }
+      .trace-desc { margin-left: auto; flex: none; font-family: var(--mono); font-size: 11px; color: var(--steel-text); }
+      /* Status: a stripe on the left plus an icon. Omit data-status for a finished line. */
+      .trace-line[data-status="running"] { box-shadow: inset 3px 0 0 var(--signal); }
+      .trace-line[data-status="running"] .trace-title::after { content: "▍"; color: var(--signal); animation: blink 1.1s steps(1) infinite; }
+      .trace-line[data-status="error"] { box-shadow: inset 3px 0 0 var(--sev-critical); }
+      .trace-line[data-status="error"] .trace-icon, .trace-line[data-status="error"] .trace-desc { color: var(--sev-critical); }
+      .trace-line[data-status="pending"] { color: var(--steel-text); }
+      details.trace-coll > summary { list-style: none; cursor: pointer; }
+      details.trace-coll > summary::-webkit-details-marker { display: none; }
+      details.trace-coll > summary:hover { background: var(--inset); }
+      details.trace-coll > summary .trace-icon::before { content: "▸"; }
+      details.trace-coll[open] > summary .trace-icon::before { content: "▾"; }
+      .trace-content { padding: 10px 14px 12px 38px; border-bottom: 1px solid var(--line); background: var(--paper); font-family: var(--mono); font-size: 11.5px; line-height: 1.6; color: var(--steel-text); white-space: pre-wrap; overflow-wrap: anywhere; }
+      @keyframes blink { 50% { opacity: 0; } }
+      @media (prefers-reduced-motion: reduce) { .trace-line[data-status="running"] .trace-title::after { animation: none; } }
+    </style>
+    <section class="dx-view" data-view="trace" data-needs="lamp" hidden>
+      <header class="dx-head"><p data-es="Una lista vertical de pasos de una sola línea: lo que hizo un proceso, con su resultado a la derecha. Las líneas pueden abrirse para ver el detalle; la que está en curso lleva franja naranja y cursor.">A vertical list of single-line steps: what a process did, with its result on the right. Lines can open to show detail; the running one carries an orange stripe and a cursor.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="trace">
+          <div class="trace-line"><span class="trace-icon">✓</span><span class="trace-title">Read the tracklist</span><span class="trace-desc">5 tracks</span></div>
+          <details class="trace-coll">
+            <summary class="trace-line"><span class="trace-icon"></span><span class="trace-title">Looked up the pressing</span><span class="trace-desc">2 sources</span></summary>
+            <div class="trace-content">Columbia CL 1355 · mono · 1959
+Matrix XLP 47324-1A</div>
+          </details>
+          <div class="trace-line"><span class="trace-icon">✓</span><span class="trace-title">Ran <code>studio level --auto</code></span><span class="trace-desc">-3 dB</span></div>
+          <div class="trace-line" data-status="running"><span class="trace-icon"><span class="lamp live"></span></span><span class="trace-title">Recording side A</span><span class="trace-desc">12:40</span></div>
+          <div class="trace-line" data-status="error"><span class="trace-icon">!</span><span class="trace-title">Fetch cover art</span><span class="trace-desc">Timed out</span></div>
+          <div class="trace-line" data-status="pending"><span class="trace-icon">·</span><span class="trace-title">Split tracks</span><span class="trace-desc">Pending</span></div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- ══ Typography ══ -->
+    <style data-css="typography">
+      .t-wordmark { font-weight: 700; font-size: 16px; letter-spacing: .3px; }
+      .t-page { font-size: 21px; font-weight: 600; line-height: 1.2; }
+      .t-title { font-size: 16px; font-weight: 600; line-height: 1.3; }
+      .t-module { font-size: 12px; font-weight: 600; }
+      .t-lead { font-size: 15px; line-height: 1.55; color: var(--steel-text); max-width: 60ch; }
+      .t-body { font-size: 13px; line-height: 1.5; }
+      .t-long { font-size: 13.5px; line-height: 1.65; max-width: 68ch; }
+      .t-label { font-size: 11px; color: var(--steel-text); }
+      .t-eyebrow { font-size: 11px; font-weight: 600; color: var(--steel-text); text-transform: uppercase; letter-spacing: .4px; }
+      .t-readout { font-size: 36px; font-weight: 600; line-height: 1; letter-spacing: -.5px; font-variant-numeric: tabular-nums; }
+      .t-data { font-family: var(--mono); font-size: 11.5px; color: var(--steel-text); }
+      .t-code { padding: 1px 5px; font-family: var(--mono); font-size: 11.5px; background: var(--inset); }
+      .t-link { color: var(--signal-text); text-underline-offset: 3px; }
+      .t-quote { margin: 0; padding-left: 12px; border-left: 2px solid var(--signal); font-size: 13.5px; line-height: 1.6; max-width: 60ch; }
+      .t-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; line-height: 1.5; }
+    </style>
+    <section class="dx-view" data-view="typography" hidden>
+      <header class="dx-head"><p data-es="Una sola familia sans, Archivo, para toda la interfaz. El monoespaciado del sistema se reserva para datos de máquina: frecuencias, identificadores, rutas y tiempos.">One sans family, Archivo, for the whole interface. The system monospace is kept for machine data: frequencies, identifiers, paths and times.</p></header>
+      <div class="dx-ex"><div class="dx-stage block">
+        <div class="dx-specrow"><span class="t-label">Wordmark · 16 / 700</span><span class="t-wordmark">Studio</span></div>
+        <div class="dx-specrow"><span class="t-label">Page title · 21 / 600</span><span class="t-page">Records in your library</span></div>
+        <div class="dx-specrow"><span class="t-label">Card title · 16 / 600</span><span class="t-title">Kind of Blue</span></div>
+        <div class="dx-specrow"><span class="t-label">Module header · 12 / 600</span><span class="t-module">Recently played</span></div>
+        <div class="dx-specrow"><span class="t-label">Lead · 15 / 1.55</span><span class="t-lead">Five tracks recorded in two sessions, with almost no rehearsal.</span></div>
+        <div class="dx-specrow"><span class="t-label">Body · 13 / 400</span><span class="t-body">The receiver remembers the last station when it turns on. Read the <a class="t-link" href="#typography">setup guide</a> or set <span class="t-code">autoplay</span> to off.</span></div>
+        <div class="dx-specrow"><span class="t-label">Long read · 13.5 / 1.65</span><span class="t-long">The musicians were given only sketches of scales and melody lines to improvise on. Most of what you hear on the record is a first complete take.</span></div>
+        <div class="dx-specrow"><span class="t-label">Quote</span><blockquote class="t-quote">Good design is as little design as possible.</blockquote></div>
+        <div class="dx-specrow"><span class="t-label">List</span><ul class="t-list"><li>Clean the stylus</li><li>Set the tracking force</li><li>Lower the arm</li></ul></div>
+        <div class="dx-specrow"><span class="t-label">Section label · 11 / 600</span><span class="t-eyebrow">Record details</span></div>
+        <div class="dx-specrow"><span class="t-label">Readout · 36 / 600</span><span class="t-readout">98.4</span></div>
+        <div class="dx-specrow"><span class="t-label">Machine data · mono 11.5</span><span class="t-data">side-a.flac · 00:12:48 · 98.400 MHz</span></div>
+      </div></div>
+      <ul class="dx-rules">
+        <li data-es="Mayúsculas solo en rótulos diminutos, con <code>letter-spacing: .3–.4px</code>. Los títulos van en tipo oración.">Uppercase only in tiny labels, with <code>letter-spacing: .3–.4px</code>. Titles use sentence case.</li>
+        <li data-es="Las cabeceras de módulo son pequeñas a propósito: el borde ya delimita el bloque.">Module headers are small on purpose: the border already frames the block.</li>
+        <li data-es="El texto corrido no pasa de 60–80 caracteres por línea.">Running text stays within 60–80 characters per line.</li>
+      </ul>
+    </section>
+
+    <nav class="dx-pager" id="dx-pager" aria-label="Previous and next"></nav>
+  </main>
+</div>

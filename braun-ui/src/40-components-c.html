@@ -1,0 +1,395 @@
+
+    <!-- ══ Data Table ══ -->
+    <style data-css="data-table">
+      .dt { background: var(--panel); border: 1px solid var(--rule); min-width: 0; }
+      .dt-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+      .dt-bar .input { max-width: 220px; }
+      .dt-bar .end, .dt-foot .end { margin-left: auto; }
+      .dt-foot { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-top: 1px solid var(--line); font-size: 11.5px; color: var(--steel-text); font-variant-numeric: tabular-nums; }
+      .th-sort { display: inline-flex; align-items: center; gap: 5px; padding: 0; background: none; border: none; font: inherit; color: inherit; cursor: pointer; }
+      .th-sort::after { content: "↕"; color: var(--steel); }
+      th[aria-sort="ascending"] .th-sort::after { content: "▴"; color: var(--signal-text); }
+      th[aria-sort="descending"] .th-sort::after { content: "▾"; color: var(--signal-text); }
+      .dt tr[aria-selected="true"] td { background: var(--inset); }
+      .dt .check input { margin: 0; }
+    </style>
+    <section class="dx-view" data-view="data-table" data-needs="table checkbox input button badge" hidden>
+      <header class="dx-head"><p data-es="Una tabla con filtro, orden por columna y selección de filas. La columna ordenada marca su flecha en naranja; las filas elegidas se hunden.">A table with a filter, column sorting and row selection. The sorted column turns its arrow orange; chosen rows are sunken.</p></header>
+      <div class="dx-ex"><div class="dx-stage block">
+        <div class="dt">
+          <div class="dt-bar"><input class="input sm dt-filter" type="search" placeholder="Filter records" aria-label="Filter records"><button class="btn btn-sm end" type="button">Export</button></div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr>
+                <th><label class="check"><input class="dt-all" type="checkbox" aria-label="Select all"></label></th>
+                <th><button class="th-sort" type="button">Album</button></th>
+                <th><button class="th-sort" type="button">Artist</button></th>
+                <th>Format</th>
+                <th class="num" aria-sort="ascending"><button class="th-sort" type="button">Year</button></th>
+                <th class="num"><button class="th-sort" type="button">Plays</button></th>
+              </tr></thead>
+              <tbody>
+                <tr aria-selected="true"><td><label class="check"><input type="checkbox" aria-label="Select row" checked></label></td><td>Kind of Blue</td><td>Miles Davis</td><td><span class="badge">LP</span></td><td class="num">1959</td><td class="num">48</td></tr>
+                <tr><td><label class="check"><input type="checkbox" aria-label="Select row"></label></td><td>Time Out</td><td>Dave Brubeck</td><td><span class="badge">LP</span></td><td class="num">1959</td><td class="num">31</td></tr>
+                <tr><td><label class="check"><input type="checkbox" aria-label="Select row"></label></td><td>A Love Supreme</td><td>John Coltrane</td><td><span class="badge">Tape</span></td><td class="num">1965</td><td class="num">27</td></tr>
+                <tr><td><label class="check"><input type="checkbox" aria-label="Select row"></label></td><td>Getz/Gilberto</td><td>Stan Getz</td><td><span class="badge">LP</span></td><td class="num">1964</td><td class="num">19</td></tr>
+                <tr><td><label class="check"><input type="checkbox" aria-label="Select row"></label></td><td>Head Hunters</td><td>Herbie Hancock</td><td><span class="badge">Single</span></td><td class="num">1973</td><td class="num">12</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="dt-foot"><span><span class="dt-count">1</span> of 5 selected</span><button class="btn btn-sm end" type="button" disabled>Previous</button><button class="btn btn-sm" type="button">Next</button></div>
+        </div>
+      </div>
+      <script data-js="data-table">
+        document.addEventListener('click', e => {
+          const sort = e.target.closest('.th-sort');
+          if (!sort) return;
+          const th = sort.closest('th'), table = th.closest('table'), col = Array.from(th.parentElement.children).indexOf(th);
+          const dir = th.getAttribute('aria-sort') === 'ascending' ? 'descending' : 'ascending';
+          table.querySelectorAll('th').forEach(h => h.removeAttribute('aria-sort'));
+          th.setAttribute('aria-sort', dir);
+          const value = row => { const t = row.children[col].textContent.trim(), n = Number(t); return isNaN(n) ? t.toLowerCase() : n; };
+          Array.from(table.tBodies[0].rows)
+            .sort((a, b) => (value(a) > value(b) ? 1 : value(a) < value(b) ? -1 : 0) * (dir === 'ascending' ? 1 : -1))
+            .forEach(row => table.tBodies[0].append(row));
+        });
+        document.addEventListener('input', e => {
+          const dt = e.target.closest('.dt');
+          if (!dt) return;
+          if (e.target.matches('.dt-filter')) {
+            const q = e.target.value.trim().toLowerCase();
+            dt.querySelectorAll('tbody tr').forEach(row => { row.hidden = !row.textContent.toLowerCase().includes(q); });
+          }
+          const boxes = Array.from(dt.querySelectorAll('tbody input[type="checkbox"]'));
+          if (e.target.matches('.dt-all')) boxes.forEach(c => { if (!c.closest('tr').hidden) c.checked = e.target.checked; });
+          boxes.forEach(c => c.closest('tr').setAttribute('aria-selected', c.checked));
+          dt.querySelector('.dt-count').textContent = boxes.filter(c => c.checked).length;
+        });
+      </script>
+      </div>
+    </section>
+
+    <!-- ══ Date Picker ══ -->
+    <section class="dx-view" data-view="date-picker" data-needs="popover select" data-js="popover calendar" hidden>
+      <header class="dx-head"><p data-es="Un botón que abre el calendario en un desplegable. Al elegir un día, el botón muestra la fecha en el idioma de la página y el calendario se cierra.">A button that opens the calendar in a popover. Once a day is picked, the button shows the date in the page language and the calendar closes.</p></header>
+      <div class="dx-ex" data-css="calendar"><div class="dx-stage start" style="min-height: 350px">
+        <div class="pop-anchor datepicker">
+          <button class="select-btn" type="button" data-pop aria-haspopup="dialog" aria-expanded="false"><span data-value>Pick a date</span><span class="caret">▾</span></button>
+          <div class="pop" hidden><div class="calendar" data-month="2026-11" data-selected="2026-11-20" style="border: none"></div></div>
+        </div>
+      </div>
+      <script data-js="date-picker">
+        function showDate(picker) {
+          const [y, m, d] = picker.querySelector('.calendar').dataset.selected.split('-').map(Number);
+          picker.querySelector('[data-value]').textContent = new Date(y, m - 1, d).toLocaleDateString(document.documentElement.lang || 'en', { dateStyle: 'long' });
+        }
+        document.addEventListener('change', e => {
+          const picker = e.target.closest('.datepicker');
+          if (!picker || !e.target.matches('.calendar')) return;
+          showDate(picker);
+          picker.querySelector('.pop').hidden = true;
+          picker.querySelector('[data-pop]').setAttribute('aria-expanded', 'false');
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+          const all = () => document.querySelectorAll('.datepicker').forEach(showDate);
+          all();
+          new MutationObserver(all).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+        });
+      </script>
+      </div>
+    </section>
+
+    <!-- ══ Dialog ══ -->
+    <style data-css="dialog">
+      dialog.dialog { padding: 0; width: min(440px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); background: var(--panel); color: var(--ink); border: 1px solid var(--rule); box-shadow: 0 12px 30px rgba(0,0,0,.14); }
+      dialog.dialog::backdrop { background: rgba(20,20,20,.4); }
+      .dialog-head { position: relative; padding: 18px 20px 0; display: flex; flex-direction: column; gap: 6px; }
+      .dialog-head h3 { font-size: 16px; line-height: 1.3; padding-right: 30px; }
+      .dialog-head p { margin: 0; font-size: 12.5px; line-height: 1.55; color: var(--steel-text); }
+      .dialog-x { position: absolute; top: 12px; right: 12px; width: 28px; height: 28px; background: none; border: 1px solid var(--line); color: var(--ink); cursor: pointer; }
+      .dialog-x:hover { border-color: var(--rule); }
+      .dialog-body { padding: 16px 20px 4px; display: flex; flex-direction: column; gap: 14px; }
+      .dialog-foot { margin-top: 16px; padding: 12px 20px; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+    </style>
+    <section class="dx-view" data-view="dialog" data-needs="button field input" hidden>
+      <header class="dx-head"><p data-es="Ventana modal sobre un velo oscuro, hecha con <code>&lt;dialog&gt;</code> nativo: el navegador se encarga del foco y de la tecla Escape.">A modal window over a dark scrim, built on native <code>&lt;dialog&gt;</code>: the browser takes care of focus and the Escape key.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <button class="btn" type="button" data-open="dialog-demo">Edit preset</button>
+        <dialog class="dialog" id="dialog-demo" aria-labelledby="dlg-title" data-light-dismiss>
+          <form method="dialog">
+            <div class="dialog-head"><h3 id="dlg-title">Edit preset 4</h3><p>Change the name and the frequency saved in this slot.</p><button class="dialog-x" type="button" data-close aria-label="Close">✕</button></div>
+            <div class="dialog-body">
+              <div class="field"><label class="label" for="dlg-name">Name</label><input class="input" id="dlg-name" type="text" value="Jazz FM"></div>
+              <div class="field"><label class="label" for="dlg-freq">Frequency</label><input class="input mono" id="dlg-freq" type="text" value="101.7 MHz"></div>
+            </div>
+            <div class="dialog-foot"><button class="btn" type="button" data-close>Cancel</button><button class="btn btn-primary" type="submit">Save preset</button></div>
+          </form>
+        </dialog>
+      </div>
+      <script data-js="dialog">
+        // data-open="id" opens a <dialog>; data-close closes the one it sits in.
+        // A dialog with data-light-dismiss also closes on a click on its backdrop.
+        document.addEventListener('click', e => {
+          const opener = e.target.closest('[data-open]');
+          if (opener) document.getElementById(opener.dataset.open).showModal();
+          const closer = e.target.closest('[data-close]');
+          if (closer) closer.closest('dialog').close();
+          if (e.target.matches('dialog[data-light-dismiss]')) e.target.close();
+        });
+      </script>
+      </div>
+      <ul class="dx-rules">
+        <li data-es="El mismo script abre diálogos, diálogos de alerta, hojas y cajones.">The same script opens dialogs, alert dialogs, sheets and drawers.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Direction ══ -->
+    <style data-css="direction">
+      /* Direction comes from the dir attribute. Flex rows, grids and text alignment follow it on their own. */
+      .dir-frame { width: 100%; max-width: 340px; background: var(--panel); border: 1px solid var(--rule); padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+      .dir-frame h3 { font-size: 16px; }
+      /* For stripes and offsets use logical properties so they flip too. */
+      .dir-frame .note { border-left: none; padding-left: 0; border-inline-start: 2px solid var(--line); padding-inline-start: 8px; }
+    </style>
+    <section class="dx-view" data-view="direction" data-needs="field input button toggle-group alert" data-js="toggle" hidden>
+      <header class="dx-head"><p data-es="Fija la dirección del texto de una zona con el atributo <code>dir</code>. Las filas flexibles y las rejillas se invierten solas; para bordes y márgenes usa propiedades lógicas.">Sets the text direction of a region with the <code>dir</code> attribute. Flex rows and grids flip on their own; for borders and margins use logical properties.</p></header>
+      <div class="dx-ex"><div class="dx-stage block" style="align-items: center">
+        <div class="toggle-group" role="group" aria-label="Direction" data-type="single">
+          <button class="toggle" type="button" aria-pressed="false" data-dir="ltr">LTR</button>
+          <button class="toggle" type="button" aria-pressed="true" data-dir="rtl">RTL</button>
+        </div>
+        <div class="dir-frame" id="dir-demo" dir="rtl" lang="ar">
+          <h3>تسجيل الدخول</h3>
+          <div class="field"><label class="label" for="dir-mail">البريد الإلكتروني</label><input class="input" id="dir-mail" type="email"></div>
+          <div class="field"><label class="label" for="dir-pass">كلمة المرور</label><input class="input" id="dir-pass" type="password"></div>
+          <div class="note">٨ أحرف على الأقل</div>
+          <div class="btn-group"><button class="btn btn-primary" type="button">دخول</button><button class="btn btn-ghost" type="button">إلغاء</button></div>
+        </div>
+      </div>
+      <script data-js="direction">
+        document.addEventListener('click', e => {
+          const b = e.target.closest('[data-dir]');
+          if (b) document.getElementById('dir-demo').dir = b.dataset.dir;
+        });
+      </script>
+      </div>
+    </section>
+
+    <!-- ══ Drawer ══ -->
+    <style data-css="drawer">
+      dialog.drawer { margin: auto 0 0; padding: 0 0 env(safe-area-inset-bottom, 0px); width: 100%; max-width: none; max-height: 85dvh; background: var(--panel); color: var(--ink); border: none; border-top: 1px solid var(--rule); }
+      dialog.drawer::backdrop { background: rgba(20,20,20,.4); }
+      dialog.drawer[open] { animation: drawer-in .24s cubic-bezier(.2,.7,.2,1); }
+      @keyframes drawer-in { from { transform: translateY(100%); } }
+      /* The grip is a short row of ticks. */
+      .drawer-grip { width: 46px; height: 6px; margin: 9px auto 2px; background: repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px 5px); }
+      .drawer-inner { max-width: 420px; margin: 0 auto; padding: 8px 20px 20px; display: flex; flex-direction: column; gap: 14px; }
+      .drawer-inner h3 { font-size: 16px; }
+      .drawer-inner p { margin: -8px 0 0; font-size: 12.5px; color: var(--steel-text); }
+      .drawer-value { display: flex; align-items: baseline; justify-content: center; gap: 7px; font-size: 12px; color: var(--steel-text); }
+      .drawer-value output { font-size: 36px; font-weight: 600; line-height: 1; letter-spacing: -.5px; color: var(--ink); font-variant-numeric: tabular-nums; }
+      @media (prefers-reduced-motion: reduce) { dialog.drawer[open] { animation: none; } }
+    </style>
+    <section class="dx-view" data-view="drawer" data-needs="button slider" data-js="dialog range" hidden>
+      <header class="dx-head"><p data-es="Panel que sube desde el borde inferior, pensado para el móvil. Su tirador es una fila corta de marcas.">A panel that rises from the bottom edge, made for phones. Its grip is a short row of ticks.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <button class="btn" type="button" data-open="drawer-demo">Set sleep timer</button>
+        <dialog class="drawer" id="drawer-demo" aria-labelledby="drw-title" data-light-dismiss>
+          <div class="drawer-grip"></div>
+          <div class="drawer-inner">
+            <h3 id="drw-title">Sleep timer</h3>
+            <p>The receiver turns itself off when the time is up.</p>
+            <div class="drawer-value">
+              <div class="slider" role="slider" tabindex="0" aria-label="Minutes" aria-valuemin="0" aria-valuemax="120" aria-valuenow="45" data-step="5" style="--v:.375; flex: 1"><span class="slider-thumb"></span></div>
+              <output>45</output><span>min</span>
+            </div>
+            <div class="btn-group" style="justify-content: flex-end"><button class="btn" type="button" data-close>Cancel</button><button class="btn btn-primary" type="button" data-close>Start timer</button></div>
+          </div>
+        </dialog>
+      </div></div>
+    </section>
+
+    <!-- ══ Dropdown Menu ══ -->
+    <style data-css="dropdown-menu">
+      .menu { padding: 6px; display: flex; flex-direction: column; min-width: 210px; }
+      .mi { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; background: none; border: none; color: var(--ink); font-family: var(--sans); font-size: 12.5px; text-align: left; white-space: nowrap; cursor: pointer; }
+      .mi:hover, .mi:focus-visible { background: var(--inset); outline: none; }
+      .mi:disabled { opacity: .45; cursor: not-allowed; }
+      .mi .kbd { margin-left: auto; }
+      .mi.danger { color: var(--sev-critical); }
+      .mi[role="menuitemcheckbox"]::before, .mi[role="menuitemradio"]::before { content: ""; width: 10px; height: 10px; border: 1px solid var(--rule); flex: none; }
+      .mi[role="menuitemradio"]::before { border-radius: 50%; }
+      .mi[aria-checked="true"]::before { background: var(--signal); border-color: var(--signal); }
+      .mi-label { padding: 7px 10px 4px; font-size: 10.5px; font-weight: 600; color: var(--steel-text); text-transform: uppercase; letter-spacing: .3px; }
+      .mi-sep { height: 1px; background: var(--line); margin: 6px 0; }
+      .menu-head { padding: 8px 10px 11px; margin-bottom: 6px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 3px; }
+      .menu-head b { font-size: 13px; }
+      .menu-head span { font-size: 11.5px; color: var(--steel-text); }
+    </style>
+    <section class="dx-view" data-view="dropdown-menu" data-needs="popover button kbd avatar" data-js="popover" hidden>
+      <header class="dx-head"><p data-es="Lista de acciones anclada a un botón. Es de los pocos elementos con sombra, porque flota sobre el resto. Las opciones marcables encienden un cuadrado naranja.">A list of actions anchored to a button. It is one of the few elements with a shadow, because it floats above the rest. Checkable items light an orange square.</p></header>
+      <div class="dx-ex"><div class="dx-stage start" style="min-height: 330px">
+        <div class="pop-anchor">
+          <button class="btn" type="button" data-pop aria-haspopup="menu" aria-expanded="false">Playback options ▾</button>
+          <div class="pop menu" role="menu" hidden>
+            <div class="mi-label">Queue</div>
+            <button class="mi" type="button" role="menuitem">Play next<kbd class="kbd">N</kbd></button>
+            <button class="mi" type="button" role="menuitem">Clear queue</button>
+            <div class="mi-sep"></div>
+            <button class="mi" type="button" role="menuitemcheckbox" aria-checked="true">Shuffle</button>
+            <button class="mi" type="button" role="menuitemcheckbox" aria-checked="false">Repeat</button>
+            <div class="mi-sep"></div>
+            <div class="mi-label">Output</div>
+            <button class="mi" type="button" role="menuitemradio" aria-checked="true">Speakers</button>
+            <button class="mi" type="button" role="menuitemradio" aria-checked="false">Headphones</button>
+          </div>
+        </div>
+        <div class="pop-anchor">
+          <button class="btn" type="button" data-pop aria-haspopup="menu" aria-expanded="false"><span class="avatar sm">DR</span>Dieter ▾</button>
+          <div class="pop menu right" role="menu" hidden>
+            <div class="menu-head"><b>Dieter R.</b><span>dieter@example.com</span></div>
+            <button class="mi" type="button" role="menuitem">Account</button>
+            <button class="mi" type="button" role="menuitem">Settings<kbd class="kbd">⌘ ,</kbd></button>
+            <div class="mi-sep"></div>
+            <button class="mi danger" type="button" role="menuitem">Sign out</button>
+          </div>
+        </div>
+      </div>
+      <script data-js="dropdown-menu">
+        document.addEventListener('click', e => {
+          const check = e.target.closest('[role="menuitemcheckbox"]');
+          if (check) check.setAttribute('aria-checked', check.getAttribute('aria-checked') !== 'true');
+          const radio = e.target.closest('[role="menuitemradio"]');
+          if (radio) {
+            let el = radio;   // radios between two separators form one group
+            while (el.previousElementSibling && el.previousElementSibling.matches('[role="menuitemradio"]')) el = el.previousElementSibling;
+            for (; el && el.matches('[role="menuitemradio"]'); el = el.nextElementSibling) el.setAttribute('aria-checked', el === radio);
+          }
+        });
+      </script>
+      </div>
+      <ul class="dx-rules">
+        <li data-es="La acción destructiva va al final, separada y en <code>--sev-critical</code>.">The destructive action goes last, separated and in <code>--sev-critical</code>.</li>
+        <li data-es="Añade <code>.right</code> al menú cuando el botón está junto al borde derecho.">Add <code>.right</code> to the menu when the button sits by the right edge.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Empty ══ -->
+    <style data-css="empty">
+      .empty { background: var(--panel); border: 1px solid var(--rule); padding: 48px 24px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+      .empty.dashed { background: none; border-style: dashed; }
+      .empty-mark { width: 26px; height: 26px; background: var(--inset); border: 1px solid var(--line); }
+      .empty h2 { font-size: 17px; }
+      .empty p { margin: 0; font-size: 12.5px; color: var(--steel-text); max-width: 44ch; line-height: 1.6; }
+      .empty-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 8px; }
+      .empty-line { padding: 36px 14px; text-align: center; font-family: var(--mono); font-size: 12px; color: var(--steel-text); }
+    </style>
+    <section class="dx-view" data-view="empty" data-needs="button" hidden>
+      <header class="dx-head"><p data-es="Lo que se ve cuando todavía no hay nada: un cuadrado hundido como marca, una frase que dice qué va a aparecer y la acción para empezar.">What shows when there is nothing yet: a sunken square as mark, a sentence saying what will appear and the action to start.</p></header>
+      <div class="dx-ex"><div class="dx-stage block">
+        <div class="empty">
+          <span class="empty-mark"></span>
+          <h2>No records yet</h2>
+          <p>Add your first record to see its tracks, plays and notes here.</p>
+          <div class="empty-actions"><button class="btn btn-primary" type="button">Add record</button><button class="btn" type="button">Import a list</button></div>
+        </div>
+        <div class="empty dashed">
+          <h2>Drop audio files here</h2>
+          <p>FLAC, WAV or MP3, up to 500 MB each.</p>
+        </div>
+        <div class="empty-line">No stations on this band</div>
+      </div></div>
+    </section>
+
+    <!-- ══ Field ══ -->
+    <style data-css="field">
+      .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+      .field-desc { font-size: 11px; color: var(--steel-text); line-height: 1.5; }
+      .field-error { font-size: 11px; color: var(--sev-critical); line-height: 1.5; }
+      .field-error:empty { display: none; }
+      .field.invalid .input { border-color: var(--sev-critical); }
+      .field.row { flex-direction: row; align-items: center; justify-content: space-between; gap: 14px; }
+      .field.row > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+      .fieldset { border: none; margin: 0; padding: 0; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+      .fieldset legend { padding: 0; margin-bottom: 12px; font-size: 11px; font-weight: 600; color: var(--steel-text); text-transform: uppercase; letter-spacing: .4px; }
+      .field-group { display: flex; flex-direction: column; gap: 18px; }
+      .field-group > .fieldset + .fieldset { padding-top: 18px; border-top: 1px solid var(--line); }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      .form-panel { background: var(--panel); border: 1px solid var(--rule); padding: 24px 26px; display: flex; flex-direction: column; gap: 18px; }
+      .form-panel h2 { font-size: 19px; }
+      .form-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 18px; border-top: 1px solid var(--line); }
+      .form-status { font-size: 11.5px; color: var(--ok-text); }
+      @media (max-width: 580px) { .grid2 { grid-template-columns: 1fr; } .form-panel { padding: 18px 16px; } }
+    </style>
+    <section class="dx-view" data-view="field" data-needs="label input native-select switch button" data-js="switch" hidden>
+      <header class="dx-head"><p data-es="La pieza con la que se arma un formulario: etiqueta, control, ayuda y error. Se agrupan en <code>fieldset</code> con un rótulo en mayúsculas. El ejemplo valida al enviar con la validación nativa del navegador.">The building block of a form: label, control, help and error. Group them in a <code>fieldset</code> with an uppercase legend. The example validates on submit with the browser's native validation.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <form class="form-panel" novalidate data-validate data-success="Station saved.">
+          <h2>New station</h2>
+          <div class="field-group">
+            <fieldset class="fieldset">
+              <legend>Station</legend>
+              <div class="grid2">
+                <div class="field"><label class="label" for="fd-name">Name</label><input class="input" id="fd-name" type="text" required minlength="2" data-error="Enter a name of at least 2 characters."><span class="field-error"></span></div>
+                <div class="field"><label class="label" for="fd-band">Band</label><div class="select-native"><select class="input" id="fd-band"><option>FM</option><option>MW</option><option>SW</option></select></div></div>
+              </div>
+              <div class="field"><label class="label" for="fd-freq">Frequency</label><input class="input mono" id="fd-freq" type="number" required min="88" max="108" step="0.1" value="98.4" data-error="Enter a frequency between 88 and 108 MHz."><span class="field-desc">In MHz, one decimal.</span><span class="field-error"></span></div>
+            </fieldset>
+            <fieldset class="fieldset">
+              <legend>Options</legend>
+              <div class="field row"><div><span class="label">Add to presets</span><span class="field-desc">Uses the next free slot.</span></div><button class="switch" type="button" role="switch" aria-checked="true" aria-label="Add to presets"><span></span></button></div>
+            </fieldset>
+          </div>
+          <div class="form-actions"><button class="btn btn-primary" type="submit">Save station</button><span class="form-status" role="status"></span></div>
+        </form>
+      </div>
+      <script data-js="field">
+        // Native validation with our own messages: add novalidate + data-validate to the form
+        // and a data-error message next to each control's constraints.
+        document.addEventListener('submit', e => {
+          const form = e.target.closest('form[data-validate]');
+          if (!form) return;
+          e.preventDefault();
+          let valid = true;
+          form.querySelectorAll('.field').forEach(field => {
+            const control = field.querySelector('input, select, textarea'), error = field.querySelector('.field-error');
+            if (!control || !error) return;
+            const bad = !control.checkValidity();
+            field.classList.toggle('invalid', bad);
+            control.setAttribute('aria-invalid', bad);
+            error.textContent = bad ? (control.dataset.error || control.validationMessage) : '';
+            if (bad && valid) control.focus();
+            valid = valid && !bad;
+          });
+          form.querySelector('.form-status').textContent = valid ? (form.dataset.success || 'Saved.') : '';
+        });
+      </script>
+      </div>
+      <ul class="dx-rules">
+        <li data-es="El error dice qué falta y cómo corregirlo; cambia el borde y el texto a <code>--sev-critical</code>.">The error says what is missing and how to fix it; border and text turn <code>--sev-critical</code>.</li>
+        <li data-es="<code>.field.row</code> pone la etiqueta a la izquierda y el control a la derecha, para interruptores.">Use <code>.field.row</code> to put the label on the left and the control on the right, for switches.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Hover Card ══ -->
+    <style data-css="hover-card">
+      .hover-card { position: relative; display: inline-block; }
+      .hc-trigger { padding: 0; background: none; border: none; font: inherit; font-weight: 500; color: var(--signal-text); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+      .hc-pop { position: absolute; left: 0; top: calc(100% + 6px); z-index: 45; width: 280px; max-width: calc(100vw - 48px); padding: 14px; gap: 12px; background: var(--panel); border: 1px solid var(--rule); box-shadow: 0 12px 30px rgba(0,0,0,.14); display: none; }
+      .hover-card:hover .hc-pop, .hover-card:focus-within .hc-pop { display: flex; animation: hc-in .12s .25s both; }
+      @keyframes hc-in { from { opacity: 0; } }
+      .hc-main { min-width: 0; display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; line-height: 1.5; }
+      .hc-main b { font-size: 13px; }
+      .hc-main small { font-size: 11px; color: var(--steel-text); }
+    </style>
+    <section class="dx-view" data-view="hover-card" data-needs="avatar" hidden>
+      <header class="dx-head"><p data-es="Una ficha que aparece al pasar el cursor o al enfocar un enlace, tras una breve espera. Solo CSS.">A card that appears when a link is hovered or focused, after a short delay. CSS only.</p></header>
+      <div class="dx-ex"><div class="dx-stage start" style="min-height: 190px; justify-content: flex-start">
+        <span style="font-size: 12.5px">Recorded by
+          <span class="hover-card">
+            <button class="hc-trigger" type="button">Miles Davis</button>
+            <span class="hc-pop" role="tooltip"><span class="avatar lg">MD</span><span class="hc-main"><b>Miles Davis</b><span>Trumpeter and bandleader. 12 records in your library.</span><small>First added in March 2024</small></span></span>
+          </span>
+        </span>
+      </div></div>
+    </section>

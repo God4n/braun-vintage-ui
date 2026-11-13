@@ -1,0 +1,355 @@
+
+    <!-- ══ Card ══ -->
+    <style data-css="card">
+      .card { background: var(--panel); border: 1px solid var(--rule); display: flex; flex-direction: column; align-items: stretch; min-width: 0; color: var(--ink); text-align: left; font: inherit; text-decoration: none; }
+      .card-head { padding: 16px 18px 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 3px 12px; align-items: start; }
+      .card-title { font-size: 16px; font-weight: 600; line-height: 1.25; }
+      .card-desc { grid-column: 1; font-size: 12.5px; color: var(--steel-text); line-height: 1.5; }
+      .card-action { grid-column: 2; grid-row: 1 / span 2; }
+      .card-body { padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; font-size: 12.5px; line-height: 1.55; }
+      .card-foot { margin-top: auto; padding: 11px 18px; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 11.5px; color: var(--steel-text); }
+      .card-foot b { color: var(--ink); font-size: 13px; font-variant-numeric: tabular-nums; }
+      .card-foot .end { margin-left: auto; }
+      /* A 3 px top border tells the state of the thing the card stands for. */
+      .card.status { border-top: 3px solid var(--sc, var(--line)); }
+      a.card, button.card { cursor: pointer; transition: border-color .12s; }
+      a.card:hover, button.card:hover { border-color: var(--ink); border-top-color: var(--sc, var(--ink)); }
+      .card-new { align-items: center; justify-content: center; min-height: 150px; border: 1px dashed var(--rule); background: none; color: var(--steel-text); font-size: 13px; }
+      button.card-new:hover { color: var(--signal-text); border-color: var(--signal); }
+      .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+    </style>
+    <section class="dx-view" data-view="card" data-needs="button badge lamp meter field input" hidden>
+      <header class="dx-head"><p data-es="Panel con cabecera, contenido y pie. Como enlace o botón, todo el contorno pasa a tinta al pasar el cursor. Un borde superior de 3 px indica el estado.">A panel with header, content and footer. As a link or button, the whole outline turns ink on hover. A 3 px top border shows state.</p></header>
+      <div class="dx-ex"><div class="dx-stage block">
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-head"><span class="card-title">Sleep timer</span><span class="card-desc">Turn the receiver off after a while.</span></div>
+            <div class="card-body"><div class="field"><label class="label" for="card-min">Minutes</label><input class="input" id="card-min" type="number" value="45" min="5" max="120"></div></div>
+            <div class="card-foot"><button class="btn btn-ghost" type="button">Cancel</button><button class="btn btn-primary end" type="button">Start timer</button></div>
+          </div>
+          <button class="card status" type="button" style="--sc: var(--signal)">
+            <span class="card-head"><span class="card-title">Kind of Blue</span><span class="card-desc">Miles Davis · 1959</span><span class="card-action status on"><span class="lamp live"></span>Playing</span></span>
+            <span class="card-body"><span class="btn-group"><span class="badge">Jazz</span><span class="badge">LP</span><span class="badge">Stereo</span></span><span class="minibar"><i style="flex:3; --sc: var(--signal)"></i><i style="flex:2"></i></span></span>
+            <span class="card-foot"><span><b>3</b> of 5 tracks</span><span class="end">Side A</span></span>
+          </button>
+          <button class="card card-new" type="button">+ New playlist</button>
+        </div>
+      </div></div>
+      <ul class="dx-rules">
+        <li data-es="Estados del borde superior con <code>--sc</code>: <code>--signal</code> en curso, <code>--sev-medium</code> detenido, <code>--ok</code> terminado.">Top border states through <code>--sc</code>: <code>--signal</code> running, <code>--sev-medium</code> stopped, <code>--ok</code> finished.</li>
+        <li data-es="La tarjeta de alta usa línea discontinua y va al final de la rejilla.">The “new” card uses a dashed line and sits last in the grid.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Carousel ══ -->
+    <style data-css="carousel">
+      .carousel { --v: 0; width: 100%; max-width: 440px; }
+      .car-track { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+      .car-track::-webkit-scrollbar { display: none; }
+      .car-slide { flex: 0 0 100%; scroll-snap-align: start; aspect-ratio: 16 / 9; background: var(--panel); border: 1px solid var(--rule); display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; padding: 16px 18px; }
+      .car-slide b { font-size: 36px; font-weight: 600; line-height: 1; letter-spacing: -.5px; font-variant-numeric: tabular-nums; }
+      .car-slide span { font-size: 12px; color: var(--steel-text); }
+      .car-bar { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+      /* Position scale: one tick per slide, the needle follows the scroll. */
+      .car-scale { position: relative; flex: 1; height: 8px; background: repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px calc((100% - 1px) / var(--gaps, 4))); }
+      .car-scale::after { content: ""; position: absolute; top: -3px; bottom: 0; left: calc(var(--v) * (100% - 1px)); width: 2px; margin-left: -.5px; background: var(--signal); transition: left .24s cubic-bezier(.2,.7,.2,1); }
+      .car-count { font-family: var(--mono); font-size: 11px; color: var(--steel-text); font-variant-numeric: tabular-nums; }
+      @media (prefers-reduced-motion: reduce) { .car-scale::after { transition: none; } }
+    </style>
+    <section class="dx-view" data-view="carousel" data-needs="button" hidden>
+      <header class="dx-head"><p data-es="Pista horizontal con ajuste por diapositiva. En lugar de puntos, una escala con una aguja indica la posición.">A horizontal track that snaps slide by slide. Instead of dots, a scale with a needle shows the position.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <div class="carousel" style="--gaps: 4">
+          <div class="car-track" tabindex="0" aria-label="Tracks on side A">
+            <div class="car-slide"><b>01</b><span>So What · 9:22</span></div>
+            <div class="car-slide"><b>02</b><span>Freddie Freeloader · 9:46</span></div>
+            <div class="car-slide"><b>03</b><span>Blue in Green · 5:37</span></div>
+            <div class="car-slide"><b>04</b><span>All Blues · 11:33</span></div>
+            <div class="car-slide"><b>05</b><span>Flamenco Sketches · 9:26</span></div>
+          </div>
+          <div class="car-bar">
+            <button class="btn btn-icon" type="button" data-car="-1" aria-label="Previous slide">‹</button>
+            <div class="car-scale"></div>
+            <span class="car-count">1 / 5</span>
+            <button class="btn btn-icon" type="button" data-car="1" aria-label="Next slide">›</button>
+          </div>
+        </div>
+      </div>
+      <script data-js="carousel">
+        document.addEventListener('click', e => {
+          const b = e.target.closest('[data-car]');
+          if (!b) return;
+          const track = b.closest('.carousel').querySelector('.car-track');
+          track.scrollBy({ left: Number(b.dataset.car) * track.clientWidth, behavior: 'smooth' });
+        });
+        document.addEventListener('scroll', e => {   // scroll does not bubble, so listen in the capture phase
+          const track = e.target;
+          if (!track.classList || !track.classList.contains('car-track')) return;
+          const car = track.closest('.carousel'), n = track.children.length;
+          const i = Math.round(track.scrollLeft / ((track.scrollWidth - track.clientWidth) || 1) * (n - 1));
+          car.style.setProperty('--v', n > 1 ? i / (n - 1) : 0);
+          car.querySelector('.car-count').textContent = (i + 1) + ' / ' + n;
+        }, true);
+      </script>
+      </div>
+      <ul class="dx-rules">
+        <li data-es="<code>--gaps</code> es el número de diapositivas menos una.">Set <code>--gaps</code> to the number of slides minus one.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Chart ══ -->
+    <style data-css="chart">
+      .chart { margin: 0; background: var(--panel); border: 1px solid var(--rule); padding: 15px 18px 14px; min-width: 0; }
+      .chart figcaption { display: flex; align-items: baseline; gap: 10px; margin-bottom: 20px; font-size: 12px; font-weight: 600; }
+      .chart figcaption span { margin-left: auto; font-weight: 400; font-size: 11.5px; color: var(--steel-text); }
+      /* Bars: height is --val / --max. Grid lines every 25%. */
+      .chart-plot { --max: 100; height: 150px; display: flex; align-items: flex-end; gap: 8px; padding: 0 4px; border-bottom: 1px solid var(--rule); background: repeating-linear-gradient(0deg, transparent 0 calc(25% - 1px), var(--line) calc(25% - 1px) 25%); }
+      .bar { position: relative; flex: 1; min-width: 0; height: calc(var(--val) / var(--max) * 100%); background: var(--sc, var(--ink)); }
+      .bar span { position: absolute; left: 0; right: 0; bottom: calc(100% + 3px); text-align: center; font-family: var(--mono); font-size: 10px; color: var(--steel-text); }
+      .bar.now { background: var(--signal); }
+      .chart-x { display: flex; gap: 8px; padding: 0 4px; }
+      .chart-x span { flex: 1; text-align: center; font-family: var(--mono); font-size: 10px; color: var(--steel-text); }
+      .chart-x span::before { content: ""; display: block; width: 1px; height: 4px; margin: 0 auto 3px; background: var(--rule); }
+      /* Horizontal bars with a label and a figure on each row. */
+      .hbars { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 9px 10px; align-items: center; font-size: 11.5px; }
+      .hbars span:nth-child(3n) { font-family: var(--mono); font-size: 11px; color: var(--steel-text); text-align: right; font-variant-numeric: tabular-nums; }
+      .hbar { --v: .5; height: 10px; background: linear-gradient(90deg, var(--sc, var(--ink)) calc(var(--v) * 100%), var(--inset) 0); }
+      /* Sparkline: an SVG polyline that stretches to its box. */
+      .spark { width: 100%; height: 36px; display: block; overflow: visible; }
+      .spark polyline { fill: none; stroke: var(--ink); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+      .spark line { stroke: var(--line); stroke-width: 1; vector-effect: non-scaling-stroke; }
+      .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+    </style>
+    <section class="dx-view" data-view="chart" hidden>
+      <header class="dx-head"><p data-es="Gráficos hechos con CSS: barras sobre una rejilla de líneas, barras horizontales por categoría y una línea de tendencia. Solo la barra del momento actual va en naranja.">Charts made with CSS: bars over a grid of lines, horizontal bars by category and a trend line. Only the bar for the current moment is orange.</p></header>
+      <div class="dx-ex"><div class="dx-stage block">
+        <figure class="chart">
+          <figcaption>Listening this week<span>Hours per day</span></figcaption>
+          <div class="chart-plot" style="--max: 4" role="img" aria-label="Hours listened per day, Monday to Sunday: 1.5, 2.2, 0.8, 3.1, 2.6, 3.8, 1.2">
+            <div class="bar" style="--val: 1.5"><span>1.5</span></div>
+            <div class="bar" style="--val: 2.2"><span>2.2</span></div>
+            <div class="bar" style="--val: 0.8"><span>0.8</span></div>
+            <div class="bar" style="--val: 3.1"><span>3.1</span></div>
+            <div class="bar" style="--val: 2.6"><span>2.6</span></div>
+            <div class="bar" style="--val: 3.8"><span>3.8</span></div>
+            <div class="bar now" style="--val: 1.2"><span>1.2</span></div>
+          </div>
+          <div class="chart-x"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+        </figure>
+        <div class="chart-grid">
+          <figure class="chart">
+            <figcaption>By source<span>Share of time</span></figcaption>
+            <div class="hbars">
+              <span>Phono</span><div class="hbar" style="--v:.46"></div><span>46%</span>
+              <span>Tuner</span><div class="hbar" style="--v:.31; --sc: var(--c-blue)"></div><span>31%</span>
+              <span>Tape</span><div class="hbar" style="--v:.15; --sc: var(--c-green)"></div><span>15%</span>
+              <span>Aux</span><div class="hbar" style="--v:.08; --sc: var(--c-brown)"></div><span>8%</span>
+            </div>
+          </figure>
+          <figure class="chart">
+            <figcaption>Signal strength<span>Last hour · dB</span></figcaption>
+            <svg class="spark" viewBox="0 0 120 36" preserveAspectRatio="none" role="img" aria-label="Signal between 52 and 74 dB, ending at 71">
+              <line x1="0" y1="18" x2="120" y2="18"></line>
+              <polyline points="0,26 10,24 20,27 30,20 40,22 50,14 60,17 70,10 80,13 90,8 100,12 110,6 120,9"></polyline>
+            </svg>
+          </figure>
+        </div>
+      </div></div>
+      <ul class="dx-rules">
+        <li data-es="Cada gráfico lleva sus valores en un <code>aria-label</code> o en cifras visibles.">Every chart carries its values in an <code>aria-label</code> or as visible figures.</li>
+        <li data-es="Orden de series: ink, signal, blue, green, yellow, brown, teal.">Series order: ink, signal, blue, green, yellow, brown, teal.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Checkbox ══ -->
+    <style data-css="checkbox">
+      .check { display: flex; gap: 11px; align-items: flex-start; font-size: 12.5px; cursor: pointer; line-height: 1.5; }
+      .check input { appearance: none; -webkit-appearance: none; width: 18px; height: 18px; margin: 1px 0 0; border: 1px solid var(--rule); border-radius: 0; background: var(--paper); flex: none; cursor: pointer; display: grid; place-content: center; }
+      .check input:checked { background: var(--signal); border-color: var(--signal); }
+      .check input:checked::after { content: "✓"; color: var(--on-signal); font-size: 12px; font-weight: 700; line-height: 1; }
+      .check input[type="checkbox"]:indeterminate { background: var(--signal); border-color: var(--signal); }
+      .check input[type="checkbox"]:indeterminate::after { content: ""; width: 8px; height: 2px; background: var(--on-signal); }
+      .check input:disabled { opacity: .45; cursor: not-allowed; }
+      .check small { display: block; font-size: 11px; color: var(--steel-text); }
+      .check-list { display: flex; flex-direction: column; gap: 10px; }
+    </style>
+    <section class="dx-view" data-view="checkbox" hidden>
+      <header class="dx-head"><p data-es="Control nativo con <code>appearance: none</code>: un cuadrado de 18 px que se rellena de naranja al marcarlo.">A native control with <code>appearance: none</code>: an 18 px square that fills orange when checked.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <div class="check-list">
+          <label class="check"><input type="checkbox" id="chk-1" checked><span>Remember the last station</span></label>
+          <label class="check"><input type="checkbox" id="chk-2"><span>Loudness at low volume<small>Boosts bass and treble below level 3.</small></span></label>
+          <label class="check"><input type="checkbox" id="chk-3" disabled><span>Dolby noise reduction</span></label>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- ══ Code Block ══ -->
+    <style data-css="code-block">
+      .codeblock { background: var(--panel); border: 1px solid var(--rule); min-width: 0; }
+      .cb-head { display: flex; align-items: center; gap: 10px; padding: 7px 8px 7px 14px; border-bottom: 1px solid var(--line); }
+      .cb-title { font-family: var(--mono); font-size: 11.5px; color: var(--steel-text); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .cb-copy { margin-left: auto; }
+      .cb-body { margin: 0; padding: 11px 0; background: var(--inset); overflow-x: auto; font-family: var(--mono); font-size: 11.5px; line-height: 1.7; counter-reset: line; }
+      .cb-line { display: block; padding: 0 14px; white-space: pre; }
+      .cb-body.numbers .cb-line::before { counter-increment: line; content: counter(line); display: inline-block; width: 2ch; margin-right: 14px; text-align: right; color: var(--steel); }
+      .cb-line.hl { background: color-mix(in srgb, var(--signal) 14%, transparent); box-shadow: inset 3px 0 0 var(--signal); }
+      .cb-line.added { background: color-mix(in srgb, var(--ok) 16%, transparent); box-shadow: inset 3px 0 0 var(--ok); }
+      .cb-line.removed { background: color-mix(in srgb, var(--sev-critical) 12%, transparent); box-shadow: inset 3px 0 0 var(--sev-critical); }
+      .codeblock.terminal .cb-body { background: var(--ink); color: var(--paper); }
+      .cb-foot { padding: 7px 14px; border-top: 1px solid var(--line); font-size: 11px; color: var(--steel-text); }
+    </style>
+    <section class="dx-view" data-view="code-block" data-needs="button" hidden>
+      <header class="dx-head"><p data-es="Muestra código, salida de terminal y diferencias sobre un fondo hundido, con cabecera, números de línea y botón de copiar opcionales.">Shows code, terminal output and diffs on a sunken ground, with an optional header, line numbers and copy button.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="codeblock">
+          <div class="cb-head"><span class="cb-title">presets/evening.json</span><button class="btn btn-sm cb-copy" type="button" data-done="Copied">Copy</button></div>
+          <pre class="cb-body numbers"><span class="cb-line">{</span><span class="cb-line">  "source": "tuner",</span><span class="cb-line hl">  "frequency": 98.4,</span><span class="cb-line removed">  "volume": 8,</span><span class="cb-line added">  "volume": 6,</span><span class="cb-line">  "loudness": true</span><span class="cb-line">}</span></pre>
+          <div class="cb-foot">1 line changed</div>
+        </div>
+        <div class="codeblock terminal">
+          <pre class="cb-body"><span class="cb-line">$ studio tune 98.4</span><span class="cb-line">locked · stereo · 71 dB</span></pre>
+        </div>
+      </div>
+      <script data-js="code-block">
+        document.addEventListener('click', e => {
+          const b = e.target.closest('.cb-copy');
+          if (!b) return;
+          const text = Array.from(b.closest('.codeblock').querySelectorAll('.cb-line'), l => l.textContent).join('\n');
+          navigator.clipboard.writeText(text).then(() => {
+            const label = b.textContent;
+            b.textContent = b.dataset.done || 'Copied';
+            setTimeout(() => { b.textContent = label; }, 1400);
+          }).catch(() => {});
+        });
+      </script>
+      </div>
+      <ul class="dx-rules">
+        <li data-es="Líneas: <code>.hl</code> resaltada, <code>.added</code> añadida, <code>.removed</code> quitada. Cada una lleva una franja a la izquierda además del tinte.">Lines: <code>.hl</code> highlighted, <code>.added</code>, <code>.removed</code>. Each carries a stripe on the left besides the tint.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Collapsible ══ -->
+    <style data-css="collapsible">
+      .collapsible { background: var(--panel); border: 1px solid var(--rule); }
+      .collapsible summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 14px; cursor: pointer; font-size: 12.5px; font-weight: 600; }
+      .collapsible summary::-webkit-details-marker { display: none; }
+      .collapsible summary::after { content: "▸"; margin-left: auto; width: 26px; height: 26px; display: grid; place-content: center; border: 1px solid var(--line); color: var(--steel-text); font-size: 10px; }
+      .collapsible[open] summary::after { content: "▾"; }
+      .collapsible summary:hover::after { border-color: var(--rule); }
+      .coll-item { padding: 8px 14px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 12px; display: flex; gap: 10px; }
+      .coll-item span { margin-left: auto; color: var(--steel-text); }
+    </style>
+    <section class="dx-view" data-view="collapsible" hidden>
+      <header class="dx-head"><p data-es="Un solo bloque que se abre y se cierra. Es un <code>&lt;details&gt;</code> nativo: no necesita JavaScript.">A single block that opens and closes. It is a native <code>&lt;details&gt;</code>: no JavaScript needed.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <details class="collapsible" open>
+          <summary>3 stations saved on FM</summary>
+          <div class="coll-item">Radio Uno<span>98.4</span></div>
+          <div class="coll-item">Jazz FM<span>101.7</span></div>
+          <div class="coll-item">Clásica<span>104.2</span></div>
+        </details>
+      </div></div>
+    </section>
+
+    <!-- ══ Combobox ══ -->
+    <section class="dx-view" data-view="combobox" data-needs="popover" data-js="popover select filter" hidden>
+      <header class="dx-head"><p data-es="Un selector con buscador: se escribe para filtrar la lista y se elige una opción. La elegida lleva una marca naranja.">A select with a search box: type to filter the list, then pick an option. The chosen one carries an orange check.</p></header>
+      <div class="dx-ex" data-css="select"><div class="dx-stage start" style="min-height: 290px">
+        <div class="pop-anchor">
+          <button class="select-btn" type="button" data-pop aria-haspopup="listbox" aria-expanded="false"><span class="placeholder" data-value>Select a station…</span><span class="caret">▾</span></button>
+          <div class="pop" hidden>
+            <input class="pop-search" type="search" placeholder="Search station" aria-label="Search station">
+            <div class="listbox" role="listbox" aria-label="Stations">
+              <button class="opt" type="button" role="option" aria-selected="false">Radio Uno</button>
+              <button class="opt" type="button" role="option" aria-selected="false">Jazz FM</button>
+              <button class="opt" type="button" role="option" aria-selected="false">Clásica</button>
+              <button class="opt" type="button" role="option" aria-selected="false">Rock Nacional</button>
+              <button class="opt" type="button" role="option" aria-selected="false">Radio Tres</button>
+            </div>
+            <div class="pop-empty" hidden>No station found.</div>
+          </div>
+        </div>
+      </div>
+      <script data-js="filter">
+        // Typing in .pop-search or .cmd-input filters the [role="option"] items of the same panel.
+        document.addEventListener('input', e => {
+          const search = e.target.closest('.pop-search, .cmd-input');
+          if (!search) return;
+          const box = search.closest('.pop, .command'), q = search.value.trim().toLowerCase();
+          let shown = 0;
+          box.querySelectorAll('[role="option"]').forEach(o => { o.hidden = !o.textContent.toLowerCase().includes(q); if (!o.hidden) shown++; });
+          box.querySelectorAll('.cmd-group').forEach(g => { g.hidden = !g.querySelector('[role="option"]:not([hidden])'); });
+          const empty = box.querySelector('.pop-empty');
+          if (empty) empty.hidden = shown > 0;
+        });
+      </script>
+      </div>
+    </section>
+
+    <!-- ══ Command ══ -->
+    <style data-css="command">
+      .command { width: 100%; max-width: 420px; background: var(--panel); border: 1px solid var(--rule); }
+      .cmd-input { width: 100%; border: none; border-bottom: 1px solid var(--line); border-radius: 0; background: none; padding: 11px 14px; font-size: 13px; color: var(--ink); }
+      .cmd-input:focus { outline: none; box-shadow: inset 0 -1px 0 var(--signal); }
+      .cmd-list { max-height: 270px; overflow-y: auto; padding: 4px; }
+      .cmd-group + .cmd-group { border-top: 1px solid var(--line); margin-top: 4px; padding-top: 4px; }
+      .command .opt .kbd { margin-left: auto; }
+    </style>
+    <section class="dx-view" data-view="command" data-needs="select kbd" data-js="filter" hidden>
+      <header class="dx-head"><p data-es="Paleta de comandos: un buscador sobre una lista de acciones agrupadas, cada una con su atajo de teclado.">A command palette: a search box over a list of grouped actions, each with its keyboard shortcut.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <div class="command">
+          <input class="cmd-input" type="search" placeholder="Type a command or search" aria-label="Type a command or search">
+          <div class="cmd-list" role="listbox" aria-label="Commands">
+            <div class="cmd-group"><div class="opt-label">Playback</div>
+              <button class="opt" type="button" role="option">Play or pause<kbd class="kbd">Space</kbd></button>
+              <button class="opt" type="button" role="option">Next track<kbd class="kbd">→</kbd></button>
+              <button class="opt" type="button" role="option">Mute<kbd class="kbd">M</kbd></button>
+            </div>
+            <div class="cmd-group"><div class="opt-label">Go to</div>
+              <button class="opt" type="button" role="option">Library<kbd class="kbd">G L</kbd></button>
+              <button class="opt" type="button" role="option">Stations<kbd class="kbd">G S</kbd></button>
+              <button class="opt" type="button" role="option">Settings<kbd class="kbd">⌘ ,</kbd></button>
+            </div>
+            <div class="pop-empty" hidden>No command found.</div>
+          </div>
+        </div>
+      </div></div>
+      <ul class="dx-rules">
+        <li data-es="Para abrirla como diálogo, colócala dentro de un <code>&lt;dialog class=&quot;dialog&quot;&gt;</code>.">To open it as a dialog, place it inside a <code>&lt;dialog class="dialog"&gt;</code>.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Context Menu ══ -->
+    <style data-css="context-menu">
+      .ctx-area { position: relative; display: grid; place-items: center; width: 100%; max-width: 380px; height: 170px; border: 1px dashed var(--rule); font-size: 12px; color: var(--steel-text); user-select: none; -webkit-user-select: none; }
+      .ctx-area .pop { min-width: 0; }
+    </style>
+    <section class="dx-view" data-view="context-menu" data-needs="popover dropdown-menu kbd" data-js="popover dropdown-menu" hidden>
+      <header class="dx-head"><p data-es="El menú que aparece al hacer clic derecho (o mantener pulsado en pantallas táctiles) sobre una zona, en la posición del puntero.">The menu that appears on right-click (or long press on touch screens) over an area, at the pointer's position.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <div class="ctx-area">
+          Right-click here
+          <div class="pop menu" role="menu" hidden>
+            <button class="mi" type="button" role="menuitem">Play next<kbd class="kbd">N</kbd></button>
+            <button class="mi" type="button" role="menuitem">Add to playlist</button>
+            <button class="mi" type="button" role="menuitemcheckbox" aria-checked="true">Favourite</button>
+            <div class="mi-sep"></div>
+            <button class="mi danger" type="button" role="menuitem">Remove from library</button>
+          </div>
+        </div>
+      </div>
+      <script data-js="context-menu">
+        document.addEventListener('contextmenu', e => {
+          const area = e.target.closest('.ctx-area');
+          if (!area) return;
+          e.preventDefault();
+          const menu = area.querySelector('.pop'), r = area.getBoundingClientRect();
+          menu.hidden = false;
+          menu.style.left = Math.max(0, Math.min(e.clientX - r.left, r.width - menu.offsetWidth)) + 'px';
+          menu.style.top = (e.clientY - r.top) + 'px';
+        });
+      </script>
+      </div>
+    </section>

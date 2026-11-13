@@ -1,0 +1,588 @@
+
+    <!-- ══ Pagination ══ -->
+    <style data-css="pagination">
+      .pagination { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+      .page { min-width: 32px; height: 32px; padding: 0 9px; display: inline-grid; place-content: center; background: var(--panel); border: 1px solid var(--line); color: var(--ink); font-size: 12.5px; font-variant-numeric: tabular-nums; text-decoration: none; cursor: pointer; }
+      .page:hover { border-color: var(--rule); }
+      .page[aria-current="page"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+      .page:disabled { opacity: .45; cursor: not-allowed; }
+      .page-gap { min-width: 24px; text-align: center; color: var(--steel-text); }
+    </style>
+    <section class="dx-view" data-view="pagination" hidden>
+      <header class="dx-head"><p data-es="Navegación entre páginas de una lista. La página actual se invierte como una tecla pulsada.">Navigation between the pages of a list. The current page inverts like a pressed key.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <nav class="pagination" aria-label="Pagination">
+          <button class="page" type="button" data-page="prev">‹ Previous</button>
+          <button class="page" type="button">1</button>
+          <button class="page" type="button" aria-current="page">2</button>
+          <button class="page" type="button">3</button>
+          <span class="page-gap">…</span>
+          <button class="page" type="button">12</button>
+          <button class="page" type="button" data-page="next">Next ›</button>
+        </nav>
+      </div>
+      <script data-js="pagination">
+        document.addEventListener('click', e => {
+          const b = e.target.closest('.pagination .page');
+          if (!b) return;
+          const pages = Array.from(b.parentElement.querySelectorAll('.page:not([data-page])'));
+          const now = pages.findIndex(p => p.getAttribute('aria-current') === 'page');
+          const next = b.dataset.page ? now + (b.dataset.page === 'next' ? 1 : -1) : pages.indexOf(b);
+          if (!pages[next]) return;
+          pages.forEach((p, i) => { if (i === next) p.setAttribute('aria-current', 'page'); else p.removeAttribute('aria-current'); });
+        });
+      </script>
+      </div>
+    </section>
+
+    <!-- ══ Popover ══ -->
+    <style data-css="popover">
+      .pop-anchor { position: relative; display: inline-block; }
+      .pop { position: absolute; top: calc(100% + 6px); left: 0; z-index: 45; min-width: 100%; background: var(--panel); border: 1px solid var(--rule); box-shadow: 0 12px 30px rgba(0,0,0,.14); }
+      .pop.right { left: auto; right: 0; }
+      .pop.up { top: auto; bottom: calc(100% + 6px); }
+      .pop-body { width: 270px; max-width: calc(100vw - 48px); padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+      .pop-body h4 { font-size: 13px; }
+      .pop-body p { margin: -8px 0 0; font-size: 11.5px; color: var(--steel-text); }
+      .pop-search { width: 100%; padding: 9px 11px; background: none; border: none; border-bottom: 1px solid var(--line); border-radius: 0; font-size: 12.5px; color: var(--ink); }
+      .pop-search:focus { outline: none; box-shadow: inset 0 -1px 0 var(--signal); }
+      .pop-empty { padding: 14px; text-align: center; font-size: 12px; color: var(--steel-text); }
+    </style>
+    <section class="dx-view" data-view="popover" data-needs="button field label input" hidden>
+      <header class="dx-head"><p data-es="Un panel flotante anclado a su botón, para ajustes rápidos que no merecen un diálogo. Se cierra con Escape o al hacer clic fuera.">A floating panel anchored to its button, for quick settings that do not deserve a dialog. It closes on Escape or an outside click.</p></header>
+      <div class="dx-ex"><div class="dx-stage start" style="min-height: 280px">
+        <div class="pop-anchor">
+          <button class="btn" type="button" data-pop aria-haspopup="dialog" aria-expanded="false">Tone settings</button>
+          <div class="pop" hidden><div class="pop-body">
+            <h4>Tone</h4>
+            <p>Set the bass and treble for this source.</p>
+            <div class="field row"><label class="label" for="pp-bass">Bass</label><input class="input sm mono" id="pp-bass" type="number" value="2" min="-6" max="6" style="width: 90px"></div>
+            <div class="field row"><label class="label" for="pp-treble">Treble</label><input class="input sm mono" id="pp-treble" type="number" value="-1" min="-6" max="6" style="width: 90px"></div>
+            <button class="btn" type="button" data-dismiss>Done</button>
+          </div></div>
+        </div>
+      </div>
+      <script data-js="popover">
+        // [data-pop] toggles the .pop inside the same .pop-anchor. An outside click or Escape closes it,
+        // and so does choosing an option, a menu item or anything marked data-dismiss.
+        (function () {
+          const closeAll = () => document.querySelectorAll('.pop:not([hidden])').forEach(pop => {
+            pop.hidden = true;
+            const trigger = pop.parentElement.querySelector('[data-pop]');
+            if (trigger) trigger.setAttribute('aria-expanded', 'false');
+          });
+          document.addEventListener('click', e => {
+            const trigger = e.target.closest('[data-pop]');
+            if (trigger) {
+              const pop = trigger.closest('.pop-anchor').querySelector('.pop'), open = pop.hidden;
+              closeAll();
+              pop.hidden = !open;
+              trigger.setAttribute('aria-expanded', open);
+              if (open) { const first = pop.querySelector('input, [role="option"], [role^="menuitem"]'); if (first) first.focus(); }
+              return;
+            }
+            const inside = e.composedPath().some(node => node.classList && node.classList.contains('pop'));
+            if (inside && !e.target.closest('[role="option"], [role="menuitem"], [data-dismiss]')) return;
+            closeAll();
+          });
+          document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAll(); });
+        })();
+      </script>
+      </div>
+      <ul class="dx-rules">
+        <li data-es="Este mismo script mueve los menús desplegables, el selector, el combobox, el selector de fecha, la barra de menús y el menú de navegación.">This same script drives dropdown menus, the select, the combobox, the date picker, the menubar and the navigation menu.</li>
+        <li data-es="<code>.right</code> alinea el panel al borde derecho del botón y <code>.up</code> lo abre hacia arriba.">Use <code>.right</code> to align the panel to the button's right edge and <code>.up</code> to open it upwards.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Progress ══ -->
+    <style data-css="progress">
+      .progress { --v: 0; display: flex; flex-direction: column; gap: 5px; }
+      .progress-head { display: flex; align-items: baseline; gap: 10px; font-size: 11.5px; color: var(--steel-text); }
+      .progress-head b { margin-left: auto; color: var(--ink); font-variant-numeric: tabular-nums; }
+      .progress-ticks { height: 6px; background: repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px calc((100% - 1px) / 20)); }
+      .progress-bar { height: 8px; overflow: hidden; background: var(--inset); }
+      .progress-bar::after { content: ""; display: block; height: 100%; width: calc(var(--v) * 100%); background: var(--ink); transition: width .45s cubic-bezier(.2,.7,.2,1); }
+      .progress.signal .progress-bar::after { background: var(--signal); }
+      .progress.segments .progress-bar { height: 10px; mask: repeating-linear-gradient(90deg, #000 0 5px, transparent 5px 8px); }
+      .progress.busy .progress-bar::after { width: 30%; animation: sweep 1.4s cubic-bezier(.4,0,.6,1) infinite; }
+      @keyframes sweep { from { margin-left: -30%; } to { margin-left: 100%; } }
+      @media (prefers-reduced-motion: reduce) { .progress-bar::after { transition: none; } .progress.busy .progress-bar::after { animation: none; margin-left: 35%; } }
+    </style>
+    <section class="dx-view" data-view="progress" data-needs="button" hidden>
+      <header class="dx-head"><p data-es="Barra de avance leída contra una fila de marcas. En tinta para un valor en reposo y en naranja cuando la tarea está en marcha.">A progress bar read against a row of ticks. Ink for a value at rest, orange while the task is running.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="progress signal" id="progress-demo" role="progressbar" aria-label="Copying side A" aria-valuemin="0" aria-valuemax="100" aria-valuenow="36" style="--v:.36">
+          <div class="progress-head"><span>Copying side A</span><b>36%</b></div>
+          <div class="progress-ticks"></div>
+          <div class="progress-bar"></div>
+        </div>
+        <button class="btn" type="button" data-run="progress-demo" style="align-self: flex-start">Run again</button>
+        <div class="progress" role="progressbar" aria-label="Storage used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="72" style="--v:.72">
+          <div class="progress-head"><span>Storage used</span><b>72%</b></div>
+          <div class="progress-bar"></div>
+        </div>
+        <div class="progress segments" role="progressbar" aria-label="Battery" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" style="--v:.5">
+          <div class="progress-head"><span>Battery</span><b>50%</b></div>
+          <div class="progress-bar"></div>
+        </div>
+        <div class="progress busy" role="progressbar" aria-label="Scanning the band">
+          <div class="progress-head"><span>Scanning the band</span></div>
+          <div class="progress-bar"></div>
+        </div>
+      </div>
+      <script data-js="progress">
+        // Demo only: [data-run="id"] fills that progress bar from 0 to 100.
+        document.addEventListener('click', e => {
+          const b = e.target.closest('[data-run]');
+          if (!b) return;
+          const bar = document.getElementById(b.dataset.run);
+          let value = 0;
+          b.disabled = true;
+          const timer = setInterval(() => {
+            value = Math.min(100, value + 4 + Math.random() * 8);
+            bar.style.setProperty('--v', value / 100);
+            bar.setAttribute('aria-valuenow', Math.round(value));
+            bar.querySelector('b').textContent = Math.round(value) + '%';
+            if (value >= 100) { clearInterval(timer); b.disabled = false; }
+          }, 220);
+        });
+      </script>
+      </div>
+      <ul class="dx-rules">
+        <li data-es="Variantes: <code>.signal</code> en curso, <code>.segments</code> por tramos y <code>.busy</code> cuando no se conoce el total.">Variants: <code>.signal</code> for running, <code>.segments</code> for steps and <code>.busy</code> when the total is unknown.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Questionnaire ══ -->
+    <style data-css="questionnaire">
+      .qn { --v: 0; width: 100%; max-width: 480px; background: var(--panel); border: 1px solid var(--rule); }
+      .qn-progress { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--line); font-size: 11px; color: var(--steel-text); font-variant-numeric: tabular-nums; white-space: nowrap; }
+      /* One tick per question; the needle shows the current one. */
+      .qn-scale { position: relative; flex: 1; height: 7px; background: repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px calc((100% - 1px) / var(--gaps, 2))); }
+      .qn-scale::after { content: ""; position: absolute; top: -3px; bottom: 0; left: calc(var(--v) * (100% - 1px)); width: 2px; margin-left: -.5px; background: var(--signal); transition: left .24s cubic-bezier(.2,.7,.2,1); }
+      .qn-item { padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+      .qn-title { font-size: 16px; font-weight: 600; line-height: 1.3; }
+      .qn-desc { margin-top: -8px; font-size: 12.5px; color: var(--steel-text); }
+      .qn-choices { display: flex; flex-direction: column; gap: 6px; }
+      .qn-choice { padding: 10px 12px; border: 1px solid var(--line); }
+      .qn-choice:hover { border-color: var(--rule); }
+      .qn-choice:has(input:checked) { border-color: var(--ink); background: var(--paper); }
+      .qn-error { font-size: 11px; color: var(--sev-critical); }
+      .qn-error:empty { display: none; }
+      .qn-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 12px 18px; border-top: 1px solid var(--line); }
+      .qn-status { margin-right: auto; font-size: 11.5px; color: var(--ok-text); }
+      @media (prefers-reduced-motion: reduce) { .qn-scale::after { transition: none; } }
+    </style>
+    <section class="dx-view" data-view="questionnaire" data-needs="checkbox radio-group button input" hidden>
+      <header class="dx-head"><p data-es="Un cuestionario por pasos con preguntas de una opción, de varias, de texto libre y omitibles. La escala de arriba tiene una marca por pregunta y la aguja señala la actual.">A step-by-step questionnaire with single-choice, multiple-choice, free-text and skippable questions. The scale on top has one tick per question and the needle points at the current one.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <div class="qn" data-step="0" data-success="Answers saved." style="--gaps: 2">
+          <div class="qn-progress"><span>Question <span class="qn-now">1</span> of 3</span><div class="qn-scale"></div></div>
+          <div class="qn-item" data-required>
+            <div class="qn-title">Where is the receiver?</div>
+            <div class="qn-desc">We use it to pick a starting tone curve.</div>
+            <div class="qn-choices" role="radiogroup" aria-label="Room">
+              <label class="check qn-choice"><input type="radio" name="qn-room" id="qn-r1"><span>Living room<small>Large, with soft furniture</small></span></label>
+              <label class="check qn-choice"><input type="radio" name="qn-room" id="qn-r2"><span>Bedroom<small>Small and quiet</small></span></label>
+              <label class="check qn-choice"><input type="radio" name="qn-room" id="qn-r3"><span>Studio<small>Treated walls, near-field speakers</small></span></label>
+            </div>
+            <div class="qn-error" role="alert" data-msg="Choose a room to continue."></div>
+          </div>
+          <div class="qn-item" hidden>
+            <div class="qn-title">Which sources do you use?</div>
+            <div class="qn-desc">Choose as many as you like.</div>
+            <div class="qn-choices">
+              <label class="check qn-choice"><input type="checkbox" id="qn-s1"><span>Phono</span></label>
+              <label class="check qn-choice"><input type="checkbox" id="qn-s2"><span>Tuner</span></label>
+              <label class="check qn-choice"><input type="checkbox" id="qn-s3"><span>Tape</span></label>
+            </div>
+          </div>
+          <div class="qn-item" hidden>
+            <div class="qn-title">Anything else we should know?</div>
+            <input class="input" id="qn-free" type="text" placeholder="For example: the left speaker is behind a sofa" aria-label="Anything else we should know?">
+          </div>
+          <div class="qn-actions">
+            <button class="btn" type="button" data-qn="prev" disabled>Previous</button>
+            <span class="qn-status" role="status"></span>
+            <button class="btn btn-ghost" type="button" data-qn="skip" hidden>Skip</button>
+            <button class="btn btn-solid" type="button" data-qn="next">Next</button>
+            <button class="btn btn-primary" type="button" data-qn="submit" hidden>Save answers</button>
+          </div>
+        </div>
+      </div>
+      <script data-js="questionnaire">
+        (function () {
+          function show(qn, step) {
+            const items = Array.from(qn.querySelectorAll('.qn-item'));
+            const i = Math.max(0, Math.min(items.length - 1, step)), last = i === items.length - 1;
+            qn.dataset.step = i;
+            items.forEach((item, n) => { item.hidden = n !== i; });
+            qn.style.setProperty('--v', items.length > 1 ? i / (items.length - 1) : 0);
+            qn.querySelector('.qn-now').textContent = i + 1;
+            qn.querySelector('[data-qn="prev"]').disabled = i === 0;
+            qn.querySelector('[data-qn="skip"]').hidden = last || items[i].hasAttribute('data-required');
+            qn.querySelector('[data-qn="next"]').hidden = last;
+            qn.querySelector('[data-qn="submit"]').hidden = !last;
+            qn.querySelector('.qn-status').textContent = '';
+          }
+          document.addEventListener('click', e => {
+            const b = e.target.closest('[data-qn]'), qn = b && b.closest('.qn');
+            if (!qn) return;
+            const i = Number(qn.dataset.step || 0), item = qn.querySelectorAll('.qn-item')[i], action = b.dataset.qn;
+            const answered = item.querySelector('input:checked') || Array.from(item.querySelectorAll('input[type="text"], textarea')).some(t => t.value.trim());
+            const error = item.querySelector('.qn-error');
+            if ((action === 'next' || action === 'submit') && item.hasAttribute('data-required') && !answered) { error.textContent = error.dataset.msg; return; }
+            if (error) error.textContent = '';
+            if (action === 'submit') { qn.querySelector('.qn-status').textContent = qn.dataset.success || 'Saved.'; return; }
+            show(qn, i + (action === 'prev' ? -1 : 1));
+          });
+        })();
+      </script>
+      </div>
+      <ul class="dx-rules">
+        <li data-es="<code>data-required</code> en una pregunta impide avanzar sin responder y oculta «Omitir». <code>--gaps</code> es el número de preguntas menos una.">Put <code>data-required</code> on a question to block moving on unanswered and to hide “Skip”. Set <code>--gaps</code> to the number of questions minus one.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Radio Group ══ -->
+    <style data-css="radio-group">
+      .check input[type="radio"] { border-radius: 50%; }
+      .check input[type="radio"]:checked { background: var(--paper); border-color: var(--ink); }
+      .check input[type="radio"]:checked::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--signal); }
+      /* Key bank: a row of piano keys. The pressed key sinks and lights its indicator. */
+      .keys { display: inline-flex; flex-wrap: wrap; background: var(--panel); border: 1px solid var(--rule); }
+      .keys label { position: relative; cursor: pointer; }
+      .keys input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+      .keys span { display: flex; flex-direction: column; align-items: center; gap: 7px; min-width: 64px; padding: 9px 12px 10px; border-right: 1px solid var(--line); font-size: 11.5px; font-weight: 500; color: var(--steel-text); }
+      .keys label:last-child span { border-right: none; }
+      .keys span::before { content: ""; width: 14px; height: 4px; background: var(--line); }
+      .keys input:checked + span { background: var(--paper); color: var(--ink); box-shadow: inset 0 2px 0 var(--ink); }
+      .keys input:checked + span::before { background: var(--signal); }
+      .keys input:focus-visible + span { outline: 2px solid var(--signal); outline-offset: -2px; }
+    </style>
+    <section class="dx-view" data-view="radio-group" data-needs="checkbox" hidden>
+      <header class="dx-head"><p data-es="Elegir una opción entre varias. El radio es redondo, como una perilla. La variante de teclas imita la fila de pulsadores de un receptor: la tecla pulsada se hunde y enciende su indicador.">Pick one option among several. The radio is round, like a knob. The key variant mimics a receiver's row of push-buttons: the pressed key sinks and lights its indicator.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <div class="check-list" role="radiogroup" aria-label="Band">
+          <label class="check"><input type="radio" name="rg-band" id="rg-1" checked><span>FM</span></label>
+          <label class="check"><input type="radio" name="rg-band" id="rg-2"><span>Medium wave</span></label>
+          <label class="check"><input type="radio" name="rg-band" id="rg-3"><span>Short wave<small>5.9 to 18 MHz</small></span></label>
+        </div>
+        <div class="keys" role="radiogroup" aria-label="Source">
+          <label><input type="radio" name="rg-src" id="rg-k1"><span>Phono</span></label>
+          <label><input type="radio" name="rg-src" id="rg-k2" checked><span>Tuner</span></label>
+          <label><input type="radio" name="rg-src" id="rg-k3"><span>Tape</span></label>
+          <label><input type="radio" name="rg-src" id="rg-k4"><span>Aux</span></label>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- ══ Resizable ══ -->
+    <style data-css="resizable">
+      .resizable { --split: 40%; display: grid; grid-template-columns: var(--split) 9px minmax(0, 1fr); width: 100%; height: 190px; background: var(--panel); border: 1px solid var(--rule); }
+      .pane { min-width: 0; overflow: auto; padding: 14px; font-size: 12.5px; line-height: 1.55; }
+      .pane b { display: block; margin-bottom: 4px; font-size: 12px; }
+      /* The handle's grip is five short ticks. */
+      .handle { cursor: col-resize; touch-action: none; border-inline: 1px solid var(--line); background: repeating-linear-gradient(0deg, var(--rule) 0 1px, transparent 1px 4px) center / 3px 18px no-repeat var(--paper); }
+      .handle:hover, .handle:focus-visible { background-color: var(--inset); }
+    </style>
+    <section class="dx-view" data-view="resizable" hidden>
+      <header class="dx-head"><p data-es="Dos paneles con un tirador entre ellos. Se arrastra o se mueve con las flechas; el reparto vive en la variable <code>--split</code>.">Two panes with a handle between them. Drag it or use the arrow keys; the split lives in the <code>--split</code> variable.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <div class="resizable">
+          <div class="pane"><b>Queue</b>So What<br>Freddie Freeloader<br>Blue in Green</div>
+          <div class="handle" role="separator" tabindex="0" aria-orientation="vertical" aria-label="Resize panes" aria-valuemin="15" aria-valuemax="85" aria-valuenow="40"></div>
+          <div class="pane"><b>Notes</b>Recorded in two sessions at Columbia's 30th Street Studio, March and April 1959.</div>
+        </div>
+      </div>
+      <script data-js="resizable">
+        (function () {
+          const setSplit = (handle, percent) => {
+            const value = Math.max(15, Math.min(85, percent));
+            handle.closest('.resizable').style.setProperty('--split', value + '%');
+            handle.setAttribute('aria-valuenow', Math.round(value));
+          };
+          document.addEventListener('pointerdown', e => {
+            const handle = e.target.closest('.handle');
+            if (!handle) return;
+            e.preventDefault(); handle.setPointerCapture(e.pointerId);
+            const move = ev => { const r = handle.closest('.resizable').getBoundingClientRect(); setSplit(handle, (ev.clientX - r.left) / r.width * 100); };
+            const stop = () => { handle.removeEventListener('pointermove', move); handle.removeEventListener('pointerup', stop); handle.removeEventListener('pointercancel', stop); };
+            handle.addEventListener('pointermove', move); handle.addEventListener('pointerup', stop); handle.addEventListener('pointercancel', stop);
+          });
+          document.addEventListener('keydown', e => {
+            const handle = e.target.closest && e.target.closest('.handle');
+            const dir = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
+            if (handle && dir) { e.preventDefault(); setSplit(handle, Number(handle.getAttribute('aria-valuenow')) + dir * 2); }
+          });
+        })();
+      </script>
+      </div>
+    </section>
+
+    <!-- ══ Scroll Area ══ -->
+    <style data-css="scroll-area">
+      .scroll-area { overflow: auto; scrollbar-width: thin; scrollbar-color: var(--rule) transparent; background: var(--panel); border: 1px solid var(--rule); overscroll-behavior: contain; }
+      .scroll-area.y { max-height: 200px; }
+      .scroll-area.x { display: flex; gap: 10px; padding: 12px; }
+      .scroll-area.x > * { flex: none; }
+      .scroll-head { position: sticky; top: 0; padding: 9px 14px; background: var(--panel); border-bottom: 1px solid var(--line); font-size: 12px; font-weight: 600; }
+      .scroll-row { display: flex; gap: 10px; padding: 8px 14px; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 12px; }
+      .scroll-row:last-child { border-bottom: none; }
+      .scroll-row span { margin-left: auto; color: var(--steel-text); }
+    </style>
+    <section class="dx-view" data-view="scroll-area" data-needs="aspect-ratio" hidden>
+      <header class="dx-head"><p data-es="Una zona con desplazamiento propio y una barra fina del color del borde. La cabecera puede quedar fija arriba.">A region that scrolls on its own, with a thin bar in the border colour. The header can stay pinned on top.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="scroll-area y" tabindex="0" aria-label="FM presets">
+          <div class="scroll-head">FM presets</div>
+          <div class="scroll-row">01 Radio Uno<span>98.4</span></div><div class="scroll-row">02 Jazz FM<span>101.7</span></div><div class="scroll-row">03 Clásica<span>104.2</span></div>
+          <div class="scroll-row">04 Rock Nacional<span>93.7</span></div><div class="scroll-row">05 Radio Tres<span>95.1</span></div><div class="scroll-row">06 La Metro<span>95.9</span></div>
+          <div class="scroll-row">07 Cultura<span>97.9</span></div><div class="scroll-row">08 Blue<span>100.7</span></div><div class="scroll-row">09 Aspen<span>102.3</span></div>
+          <div class="scroll-row">10 Urbana<span>104.3</span></div><div class="scroll-row">11 Mega<span>98.3</span></div><div class="scroll-row">12 Vale<span>97.5</span></div>
+        </div>
+        <div class="scroll-area x" tabindex="0" aria-label="Covers">
+          <div class="ratio grille" style="--ratio: 1; width: 110px"><span>A1</span></div><div class="ratio grille slots" style="--ratio: 1; width: 110px"><span>A2</span></div><div class="ratio grille" style="--ratio: 1; width: 110px"><span>A3</span></div>
+          <div class="ratio grille slots" style="--ratio: 1; width: 110px"><span>B1</span></div><div class="ratio grille" style="--ratio: 1; width: 110px"><span>B2</span></div><div class="ratio grille slots" style="--ratio: 1; width: 110px"><span>B3</span></div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- ══ Select ══ -->
+    <style data-css="select">
+      .select-btn { display: inline-flex; align-items: center; justify-content: space-between; gap: 10px; min-width: 190px; height: 34px; padding: 0 10px 0 11px; background: var(--paper); border: 1px solid var(--line); color: var(--ink); font-size: 13px; text-align: left; cursor: pointer; }
+      .select-btn:hover, .select-btn[aria-expanded="true"] { border-color: var(--rule); }
+      .select-btn .caret { font-size: 10px; color: var(--steel-text); }
+      .select-btn .placeholder { color: var(--steel-text); }
+      .listbox { display: flex; flex-direction: column; max-height: 230px; overflow-y: auto; padding: 4px; }
+      .opt { display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px 9px; background: none; border: none; color: var(--ink); font-size: 12.5px; text-align: left; white-space: nowrap; cursor: pointer; }
+      .opt:hover, .opt:focus-visible { background: var(--inset); outline: none; }
+      .opt[aria-selected="true"]::after { content: "✓"; margin-left: auto; color: var(--signal-text); font-weight: 700; }
+      .opt:disabled { opacity: .45; cursor: not-allowed; }
+      .opt-label { padding: 7px 9px 3px; font-size: 10.5px; font-weight: 600; color: var(--steel-text); text-transform: uppercase; letter-spacing: .3px; }
+      .opt-sep { height: 1px; margin: 4px 0; background: var(--line); }
+    </style>
+    <section class="dx-view" data-view="select" data-needs="popover" data-js="popover" hidden>
+      <header class="dx-head"><p data-es="Selector con lista propia: un botón con aspecto de campo abre las opciones, que pueden ir agrupadas. La elegida lleva una marca naranja.">A select with its own list: a field-like button opens the options, which can be grouped. The chosen one carries an orange check.</p></header>
+      <div class="dx-ex"><div class="dx-stage start" style="min-height: 290px">
+        <div class="pop-anchor">
+          <button class="select-btn" type="button" data-pop aria-haspopup="listbox" aria-expanded="false"><span data-value>Tuner</span><span class="caret">▾</span></button>
+          <div class="pop" hidden>
+            <div class="listbox" role="listbox" aria-label="Source">
+              <div class="opt-label">Analogue</div>
+              <button class="opt" type="button" role="option" aria-selected="false">Phono</button>
+              <button class="opt" type="button" role="option" aria-selected="true">Tuner</button>
+              <button class="opt" type="button" role="option" aria-selected="false">Tape</button>
+              <div class="opt-sep"></div>
+              <div class="opt-label">Digital</div>
+              <button class="opt" type="button" role="option" aria-selected="false">Aux</button>
+              <button class="opt" type="button" role="option" aria-selected="false" disabled>Network</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script data-js="select">
+        document.addEventListener('click', e => {
+          const option = e.target.closest('.listbox [role="option"]'), box = option && option.closest('.pop-anchor');
+          const label = box && box.querySelector('[data-value]');
+          if (!label) return;
+          box.querySelectorAll('[role="option"]').forEach(o => o.setAttribute('aria-selected', o === option));
+          label.textContent = option.textContent;
+          label.classList.remove('placeholder');
+        });
+      </script>
+      </div>
+    </section>
+
+    <!-- ══ Separator ══ -->
+    <style data-css="separator">
+      .sep { flex: none; align-self: stretch; height: 1px; margin: 0; border: none; background: var(--line); }
+      .sep.strong { background: var(--rule); }
+      .sep.v { width: 1px; height: auto; min-height: 1em; }
+      .sep.ruler { height: 7px; background: repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 7px); }
+      .sep-label { display: flex; align-items: center; gap: 12px; font-size: 11px; font-weight: 600; color: var(--steel-text); text-transform: uppercase; letter-spacing: .4px; }
+      .sep-label::before, .sep-label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+    </style>
+    <section class="dx-view" data-view="separator" data-needs="card" hidden>
+      <header class="dx-head"><p data-es="Una línea que separa. Suave dentro de un panel, fuerte entre bloques, y con marcas cuando lo que sigue es una medida.">A line that separates. Soft inside a panel, strong between blocks, and ticked when what follows is a measurement.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="card"><div class="card-body">
+          <span>Kind of Blue</span>
+          <hr class="sep">
+          <div style="display: flex; align-items: center; gap: 12px"><span>Jazz</span><span class="sep v" role="separator" aria-orientation="vertical"></span><span>1959</span><span class="sep v" role="separator" aria-orientation="vertical"></span><span>45:44</span></div>
+          <hr class="sep strong">
+          <span>Side A</span>
+          <div class="sep ruler" role="separator"></div>
+          <div class="sep-label" role="separator">Side B</div>
+        </div></div>
+      </div></div>
+    </section>
+
+    <!-- ══ Sheet ══ -->
+    <style data-css="sheet">
+      dialog.sheet { margin: 0 0 0 auto; padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px); width: min(420px, 100%); height: 100dvh; max-width: none; max-height: none; background: var(--panel); color: var(--ink); border: none; border-left: 1px solid var(--rule); }
+      dialog.sheet::backdrop { background: rgba(20,20,20,.4); }
+      dialog.sheet[open] { display: flex; flex-direction: column; animation: sheet-in .24s cubic-bezier(.2,.7,.2,1); }
+      dialog.sheet.left { margin: 0 auto 0 0; border-left: none; border-right: 1px solid var(--rule); }
+      dialog.sheet.left[open] { animation-name: sheet-in-left; }
+      @keyframes sheet-in { from { transform: translateX(100%); } }
+      @keyframes sheet-in-left { from { transform: translateX(-100%); } }
+      .sheet-head { display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--line); }
+      .sheet-head h3 { font-size: 12px; font-weight: 600; color: var(--steel-text); }
+      .sheet-x { margin-left: auto; width: 28px; height: 28px; background: none; border: 1px solid var(--line); color: var(--ink); cursor: pointer; }
+      .sheet-x:hover { border-color: var(--rule); }
+      .sheet-body { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 15px; }
+      .sheet-title { font-size: 18px; font-weight: 600; line-height: 1.3; }
+      .sheet-body p { margin: 0; font-size: 12.5px; line-height: 1.55; max-width: 60ch; }
+      .sheet-sec { padding-top: 12px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; }
+      .sheet-sec h4 { font-size: 11.5px; font-weight: 600; color: var(--steel-text); }
+      .sheet-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 18px; border-top: 1px solid var(--line); }
+      @media (prefers-reduced-motion: reduce) { dialog.sheet[open] { animation: none; } }
+    </style>
+    <section class="dx-view" data-view="sheet" data-needs="button badge table" data-js="dialog" hidden>
+      <header class="dx-head"><p data-es="Panel de detalle que entra desde un lateral sobre un velo oscuro. Muestra un elemento sin sacar al usuario de la lista.">A detail panel that slides in from the side over a dark scrim. It shows one item without taking the user out of the list.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <button class="btn" type="button" data-open="sheet-demo">Open record details</button>
+        <button class="btn" type="button" data-open="sheet-left-demo">Open from the left</button>
+        <dialog class="sheet" id="sheet-demo" aria-label="Record details" data-light-dismiss>
+          <div class="sheet-head"><h3>Record details</h3><button class="sheet-x" type="button" data-close aria-label="Close">✕</button></div>
+          <div class="sheet-body">
+            <div class="btn-group"><span class="badge">Jazz</span><span class="badge">LP</span><span class="badge tone" style="--sc: var(--ok-text)">Verified</span></div>
+            <div class="sheet-title">Kind of Blue</div>
+            <p>Recorded in two sessions in March and April 1959. Five tracks across two sides.</p>
+            <div class="sheet-sec"><h4>Details</h4>
+              <dl class="kv"><dt>Artist</dt><dd>Miles Davis</dd><dt>Record label</dt><dd>Columbia CL 1355</dd><dt>Length</dt><dd>45:44</dd><dt>Plays</dt><dd>48</dd></dl>
+            </div>
+          </div>
+          <div class="sheet-foot"><button class="btn" type="button" data-close>Close</button><button class="btn btn-primary" type="button" data-close>Play</button></div>
+        </dialog>
+        <dialog class="sheet left" id="sheet-left-demo" aria-label="Queue" data-light-dismiss>
+          <div class="sheet-head"><h3>Queue</h3><button class="sheet-x" type="button" data-close aria-label="Close">✕</button></div>
+          <div class="sheet-body"><p>3 tracks waiting.</p></div>
+        </dialog>
+      </div></div>
+      <ul class="dx-rules">
+        <li data-es="Ancho <code>min(420px, 100%)</code>; entra en 240 ms. Se cierra con el botón, con un clic en el velo o con Escape.">Width is <code>min(420px, 100%)</code>; it enters in 240 ms. It closes with the button, a click on the scrim or Escape.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Sidebar ══ -->
+    <style data-css="sidebar-nav">
+      .app { display: grid; grid-template-columns: 200px minmax(0, 1fr); width: 100%; height: 330px; background: var(--paper); border: 1px solid var(--rule); transition: grid-template-columns .2s cubic-bezier(.2,.7,.2,1); }
+      .app.collapsed { grid-template-columns: 49px minmax(0, 1fr); }
+      .sidebar { min-width: 0; overflow: hidden; display: flex; flex-direction: column; background: var(--panel); border-right: 1px solid var(--line); }
+      .sb-head { display: flex; align-items: center; gap: 9px; padding: 12px 17px; border-bottom: 1px solid var(--line); font-size: 14px; font-weight: 700; letter-spacing: .3px; white-space: nowrap; }
+      .sb-mark { width: 13px; height: 13px; flex: none; background: var(--signal); }
+      .sb-group { display: flex; flex-direction: column; gap: 1px; padding: 12px 8px 4px; }
+      .sb-label { padding: 0 8px 6px; font-size: 10.5px; font-weight: 600; color: var(--steel-text); text-transform: uppercase; letter-spacing: .4px; white-space: nowrap; }
+      .sb-link { display: flex; align-items: center; gap: 10px; padding: 6px 8px 6px 3px; background: none; border: none; border-left: 3px solid transparent; color: var(--steel-text); font-size: 12.5px; text-align: left; text-decoration: none; white-space: nowrap; cursor: pointer; }
+      .sb-link:hover { color: var(--ink); }
+      .sb-link[aria-current="page"] { color: var(--ink); font-weight: 600; background: var(--inset); border-left-color: var(--signal); }
+      .sb-ico { width: 20px; height: 20px; flex: none; display: grid; place-content: center; border: 1px solid var(--line); font-family: var(--mono); font-size: 10px; font-weight: 400; color: var(--steel-text); }
+      .sb-link .badge { margin-left: auto; }
+      .sb-foot { margin-top: auto; display: flex; align-items: center; gap: 9px; padding: 10px 12px; border-top: 1px solid var(--line); font-size: 12px; white-space: nowrap; }
+      .app.collapsed .sb-text, .app.collapsed .sb-label, .app.collapsed .sb-link .badge { display: none; }
+      .app-main { min-width: 0; display: flex; flex-direction: column; }
+      .app-bar { display: flex; align-items: center; gap: 10px; padding: 8px 14px; background: var(--panel); border-bottom: 1px solid var(--line); font-size: 12.5px; font-weight: 600; }
+      .app-body { flex: 1; overflow: auto; padding: 16px; font-size: 12.5px; color: var(--steel-text); }
+      @media (prefers-reduced-motion: reduce) { .app { transition: none; } }
+    </style>
+    <section class="dx-view" data-view="sidebar-nav" data-needs="button badge avatar" hidden>
+      <header class="dx-head"><p data-es="La barra lateral de una aplicación: marca, grupos de enlaces y usuario al pie. El enlace activo se hunde y enciende su borde izquierdo. Se pliega hasta dejar solo los iconos.">An application's sidebar: brand, groups of links and the user at the bottom. The active link sinks and lights its left border. It collapses down to icons only.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <div class="app">
+          <aside class="sidebar">
+            <div class="sb-head"><span class="sb-mark"></span><span class="sb-text">Studio</span></div>
+            <nav class="sb-group" aria-label="Listen">
+              <span class="sb-label">Listen</span>
+              <a class="sb-link" href="#sidebar-nav" aria-current="page"><span class="sb-ico">N</span><span class="sb-text">Now playing</span></a>
+              <a class="sb-link" href="#sidebar-nav"><span class="sb-ico">L</span><span class="sb-text">Library</span><span class="badge signal">3</span></a>
+              <a class="sb-link" href="#sidebar-nav"><span class="sb-ico">S</span><span class="sb-text">Stations</span></a>
+            </nav>
+            <nav class="sb-group" aria-label="Device">
+              <span class="sb-label">Device</span>
+              <a class="sb-link" href="#sidebar-nav"><span class="sb-ico">T</span><span class="sb-text">Tone</span></a>
+              <a class="sb-link" href="#sidebar-nav"><span class="sb-ico">C</span><span class="sb-text">Settings</span></a>
+            </nav>
+            <div class="sb-foot"><span class="avatar sm">DR</span><span class="sb-text">Dieter R.</span></div>
+          </aside>
+          <div class="app-main">
+            <div class="app-bar"><button class="btn btn-icon" type="button" data-sidebar-toggle aria-label="Toggle sidebar" aria-expanded="true">≡</button><span>Now playing</span></div>
+            <div class="app-body">Page content goes here.</div>
+          </div>
+        </div>
+      </div>
+      <script data-js="sidebar-nav">
+        document.addEventListener('click', e => {
+          const toggle = e.target.closest('[data-sidebar-toggle]');
+          if (toggle) toggle.setAttribute('aria-expanded', !toggle.closest('.app').classList.toggle('collapsed'));
+          const link = e.target.closest('.sb-link');
+          if (link) link.closest('.sidebar').querySelectorAll('.sb-link').forEach(l => { if (l === link) l.setAttribute('aria-current', 'page'); else l.removeAttribute('aria-current'); });
+        });
+      </script>
+      </div>
+      <ul class="dx-rules">
+        <li data-es="En una página real <code>.app</code> ocupa toda la pantalla: quita la altura fija y usa <code>min-height: 100dvh</code>.">On a real page <code>.app</code> fills the screen: drop the fixed height and use <code>min-height: 100dvh</code>.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Skeleton ══ -->
+    <style data-css="skeleton">
+      .skeleton { background: var(--inset); animation: skeleton 1.6s ease-in-out infinite; }
+      .skeleton.text { height: 10px; }
+      .skeleton.title { height: 16px; width: 55%; }
+      .skeleton.square { width: 32px; height: 32px; flex: none; }
+      @keyframes skeleton { 50% { opacity: .45; } }
+      @media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }
+    </style>
+    <section class="dx-view" data-view="skeleton" data-needs="item card" hidden>
+      <header class="dx-head"><p data-es="Bloques hundidos que ocupan el sitio del contenido mientras carga. Copian la forma de lo que va a llegar.">Sunken blocks that hold the place of content while it loads. They copy the shape of what is coming.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="item-list" aria-busy="true" aria-label="Loading tracks">
+          <div class="item"><span class="skeleton square"></span><span class="item-main" style="gap: 7px"><span class="skeleton text" style="width: 45%"></span><span class="skeleton text" style="width: 70%"></span></span></div>
+          <div class="item"><span class="skeleton square"></span><span class="item-main" style="gap: 7px"><span class="skeleton text" style="width: 60%"></span><span class="skeleton text" style="width: 40%"></span></span></div>
+        </div>
+        <div class="card" aria-busy="true" aria-label="Loading record"><div class="card-body"><span class="skeleton title"></span><span class="skeleton text"></span><span class="skeleton text" style="width: 85%"></span><span class="skeleton" style="height: 90px"></span></div></div>
+      </div></div>
+    </section>
+
+    <!-- ══ Slider ══ -->
+    <style data-css="slider">
+      .slider { --v: .5; position: relative; height: 30px; min-width: 120px; cursor: pointer; touch-action: none; }
+      .slider::before { content: ""; position: absolute; left: 0; right: 0; top: 7px; height: 4px; background: linear-gradient(90deg, var(--ink) calc(var(--v) * 100%), var(--inset) 0); }
+      /* The scale under the track: set --ticks to the number of intervals. */
+      .slider::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px calc((100% - 1px) / var(--ticks, 10))); }
+      .slider-thumb { position: absolute; top: 0; left: calc(var(--v) * (100% - 1px)); width: 11px; height: 18px; margin-left: -5px; background: var(--panel); border: 1px solid var(--rule); }
+      .slider.signal::before { background: linear-gradient(90deg, var(--signal) calc(var(--v) * 100%), var(--inset) 0); }
+      .slider:focus-visible { outline-offset: 4px; }
+      .slider[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+      .slider-field { display: flex; flex-direction: column; gap: 6px; }
+      .slider-head { display: flex; align-items: baseline; font-size: 11.5px; font-weight: 600; }
+      .slider-head output { margin-left: auto; font-variant-numeric: tabular-nums; }
+      .slider-nums { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--steel-text); }
+    </style>
+    <section class="dx-view" data-view="slider" data-needs="card" data-js="range" hidden>
+      <header class="dx-head"><p data-es="Deslizador horizontal con su escala debajo: el valor se lee contra las marcas. El tirador es un rectángulo, no un círculo.">A horizontal slider with its scale underneath: the value is read against the ticks. The thumb is a rectangle, not a circle.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="card"><div class="card-body" style="gap: 20px">
+          <div class="slider-field">
+            <div class="slider-head"><span>Volume</span><output>6</output></div>
+            <div class="slider signal" role="slider" tabindex="0" aria-label="Volume" aria-valuemin="0" aria-valuemax="10" aria-valuenow="6" style="--v:.6"><span class="slider-thumb"></span></div>
+            <div class="slider-nums"><span>0</span><span>5</span><span>10</span></div>
+          </div>
+          <div class="slider-field">
+            <div class="slider-head"><span>Balance</span><output>0</output></div>
+            <div class="slider" role="slider" tabindex="0" aria-label="Balance" aria-valuemin="-10" aria-valuemax="10" aria-valuenow="0" style="--v:.5; --ticks: 20"><span class="slider-thumb"></span></div>
+            <div class="slider-nums"><span>L</span><span>R</span></div>
+          </div>
+          <div class="slider-field">
+            <div class="slider-head"><span>Tape speed</span><output>50</output></div>
+            <div class="slider" role="slider" tabindex="0" aria-disabled="true" aria-label="Tape speed" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" style="--v:.5"><span class="slider-thumb"></span></div>
+          </div>
+        </div></div>
+      </div></div>
+      <ul class="dx-rules">
+        <li data-es="Comparte motor con la perilla, el dial y el fader: cualquier elemento con <code>role=&quot;slider&quot;</code> y la variable <code>--v</code>.">It shares its engine with the knob, the dial and the fader: any element with <code>role="slider"</code> and the <code>--v</code> variable.</li>
+      </ul>
+    </section>

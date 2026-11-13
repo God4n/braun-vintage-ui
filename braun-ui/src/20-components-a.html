@@ -1,0 +1,384 @@
+
+    <!-- ════════════════════════════ COMPONENTS ════════════════════════════ -->
+
+    <!-- ══ Accordion ══ -->
+    <style data-css="accordion">
+      .accordion { border: 1px solid var(--rule); background: var(--panel); }
+      .accordion details { border-bottom: 1px solid var(--line); }
+      .accordion details:last-child { border-bottom: none; }
+      .accordion summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 12px 16px; font-size: 12.5px; font-weight: 600; }
+      .accordion summary::-webkit-details-marker { display: none; }
+      .accordion summary::before { content: ""; width: 8px; height: 8px; border: 1px solid var(--rule); flex: none; }
+      .accordion details[open] summary::before { background: var(--signal); border-color: var(--signal); }
+      .accordion summary::after { content: "▸"; margin-left: auto; color: var(--steel-text); font-size: 10px; }
+      .accordion details[open] summary::after { content: "▾"; }
+      .accordion summary:hover { background: var(--inset); }
+      .accordion .acc-body { padding: 2px 16px 14px 34px; font-size: 12.5px; line-height: 1.6; color: var(--steel-text); max-width: 70ch; }
+    </style>
+    <section class="dx-view" data-view="accordion" hidden>
+      <header class="dx-head"><p data-es="Secciones apiladas que se abren de una en una. Usa <code>&lt;details&gt;</code> nativo con el mismo <code>name</code>, sin JavaScript. El cuadrado se enciende en la sección abierta.">Stacked sections that open one at a time. It uses native <code>&lt;details&gt;</code> sharing one <code>name</code>, no JavaScript. The square lights up on the open section.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="accordion">
+          <details name="acc-demo" open><summary>How do I connect a turntable?</summary><div class="acc-body">Plug it into the Phono input and turn the source selector to Phono. The ground wire goes to the screw next to the input.</div></details>
+          <details name="acc-demo"><summary>Can I save more than 16 presets?</summary><div class="acc-body">No. Each band keeps 16 presets; saving a new one replaces the slot you choose.</div></details>
+          <details name="acc-demo"><summary>Why does the lamp pulse?</summary><div class="acc-body">A pulsing lamp means the receiver is playing right now. A steady lamp means it is ready.</div></details>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- ══ Alert ══ -->
+    <style data-css="alert">
+      .alert { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 11px; padding: 12px 14px; border: 1px solid var(--line); border-left: 3px solid var(--sc, var(--steel)); background: var(--panel); font-size: 12.5px; line-height: 1.5; }
+      .alert .glyph { grid-row: span 2; color: var(--sc, var(--steel-text)); font-weight: 700; }
+      .alert-title { font-weight: 600; }
+      .alert-desc { grid-column: 2; color: var(--steel-text); }
+      .alert-actions { grid-column: 2; display: flex; gap: 8px; margin-top: 8px; }
+      .note { font-size: 11.5px; color: var(--steel-text); border-left: 2px solid var(--line); padding-left: 8px; }
+      .note.alert-note { color: var(--sev-critical); border-left-color: var(--sev-critical); }
+    </style>
+    <section class="dx-view" data-view="alert" data-needs="button" hidden>
+      <header class="dx-head"><p data-es="Mensaje fijo sobre una condición que sigue vigente. El borde izquierdo lleva el color del estado y un glifo lo repite, para no depender solo del color.">A standing message about a condition that still holds. The left border carries the status colour and a glyph repeats it, so colour is never the only cue.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="alert" role="status"><span class="glyph">i</span><span class="alert-title">Demo mode</span><span class="alert-desc">The stations you see are examples.</span></div>
+        <div class="alert" role="status" style="--sc: var(--ok)"><span class="glyph">✓</span><span class="alert-title">Presets backed up</span><span class="alert-desc">16 stations saved to your account.</span></div>
+        <div class="alert" role="alert" style="--sc: var(--sev-medium)"><span class="glyph">!</span><span class="alert-title">Weak signal</span><span class="alert-desc">Reception on FM is below 20 dB. Extend the antenna or move the receiver.</span></div>
+        <div class="alert" role="alert" style="--sc: var(--sev-critical)"><span class="glyph">!</span><span class="alert-title">Speaker output overloaded</span><span class="alert-desc">The amplifier was muted to protect the speakers.</span><div class="alert-actions"><button class="btn" type="button">Lower volume and resume</button></div></div>
+        <div class="note">The antenna input is 75 Ω.</div>
+      </div></div>
+    </section>
+
+    <!-- ══ Alert Dialog ══ -->
+    <section class="dx-view" data-view="alert-dialog" data-needs="button" data-js="dialog" hidden>
+      <header class="dx-head"><p data-es="Diálogo modal que interrumpe para confirmar algo que no se puede deshacer. No se cierra al hacer clic fuera: hay que elegir una opción.">A modal dialog that interrupts to confirm something that cannot be undone. It does not close on an outside click: one option has to be chosen.</p></header>
+      <div class="dx-ex" data-css="dialog"><div class="dx-stage">
+        <button class="btn btn-danger" type="button" data-open="alert-dialog-demo">Delete all presets</button>
+        <dialog class="dialog" id="alert-dialog-demo" role="alertdialog" aria-labelledby="ad-title">
+          <div class="dialog-head"><h3 id="ad-title">Delete all 16 presets?</h3><p>This removes every saved station from the receiver. You cannot undo it.</p></div>
+          <div class="dialog-foot"><button class="btn" type="button" data-close>Keep presets</button><button class="btn btn-danger-solid" type="button" data-close>Delete presets</button></div>
+        </dialog>
+      </div></div>
+      <ul class="dx-rules">
+        <li data-es="Los botones nombran la acción («Borrar presintonías»), no «Sí» o «Aceptar».">Buttons name the action (“Delete presets”), never “Yes” or “OK”.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Aspect Ratio ══ -->
+    <style data-css="aspect-ratio">
+      .ratio { aspect-ratio: var(--ratio, 16 / 9); width: 100%; max-width: 100%; overflow: hidden; border: 1px solid var(--rule); background: var(--panel); display: grid; place-items: center; font-family: var(--mono); font-size: 11px; color: var(--steel-text); }
+      .ratio > img, .ratio > video { width: 100%; height: 100%; object-fit: cover; }
+      /* Speaker grille: the placeholder surface for media that is not there yet. */
+      .grille { background-image: radial-gradient(circle, var(--rule) 1.1px, transparent 1.5px); background-size: 9px 9px; background-position: center; }
+      .grille.slots { background-image: repeating-linear-gradient(0deg, var(--rule) 0 1px, transparent 1px 6px); }
+      .ratio span { background: var(--panel); padding: 2px 8px; border: 1px solid var(--line); }
+    </style>
+    <section class="dx-view" data-view="aspect-ratio" hidden>
+      <header class="dx-head"><p data-es="Caja que mantiene una proporción fija. Mientras no hay imagen, la rejilla de altavoz hace de marcador.">A box that keeps a fixed ratio. While there is no image, the speaker grille stands in as placeholder.</p></header>
+      <div class="dx-ex"><div class="dx-stage start">
+        <div class="ratio grille" style="flex: 1 1 260px"><span>16 / 9</span></div>
+        <div class="ratio grille slots" style="--ratio: 1; flex: 0 1 150px"><span>1 / 1</span></div>
+        <div class="ratio" style="--ratio: 4 / 3; flex: 0 1 180px"><span>4 / 3</span></div>
+      </div></div>
+    </section>
+
+    <!-- ══ Attachment ══ -->
+    <style data-css="attachment">
+      .att-group { display: flex; flex-wrap: wrap; gap: 8px; }
+      .attachment { --v: 0; position: relative; display: inline-flex; align-items: center; gap: 10px; padding: 8px 10px; background: var(--panel); border: 1px solid var(--line); min-width: 0; width: 250px; max-width: 100%; }
+      .att-media { width: 34px; height: 34px; flex: none; display: grid; place-content: center; background: var(--inset); border: 1px solid var(--line); font-family: var(--mono); font-size: 9.5px; font-weight: 600; color: var(--steel-text); text-transform: uppercase; }
+      .att-media.image { background: radial-gradient(circle, var(--rule) 1px, transparent 1.4px) center / 6px 6px var(--inset); }
+      .att-main { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 1px; }
+      .att-title { font-size: 12.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .att-desc { font-size: 11px; color: var(--steel-text); font-variant-numeric: tabular-nums; }
+      .att-action { width: 24px; height: 24px; flex: none; background: none; border: 1px solid transparent; color: var(--steel-text); cursor: pointer; font-size: 11px; }
+      .att-action:hover { border-color: var(--line); color: var(--ink); }
+      .attachment[data-state="uploading"]::after { content: ""; position: absolute; left: -1px; bottom: -1px; height: 2px; width: calc(var(--v) * (100% + 2px)); background: var(--signal); }
+      .attachment[data-state="uploading"] .att-desc { color: var(--signal-text); }
+      .attachment[data-state="error"] { border-left: 3px solid var(--sev-critical); }
+      .attachment[data-state="error"] .att-desc { color: var(--sev-critical); }
+      .attachment.sm { padding: 5px 8px; width: auto; }
+      .attachment.sm .att-media { width: 22px; height: 22px; font-size: 8px; }
+    </style>
+    <section class="dx-view" data-view="attachment" hidden>
+      <header class="dx-head"><p data-es="Muestra un archivo adjunto con su tipo, sus datos, el estado de subida y sus acciones. Mientras sube, una línea naranja avanza por el borde inferior.">Shows an attached file with its type, metadata, upload state and actions. While it uploads, an orange line advances along the bottom edge.</p></header>
+      <div class="dx-ex"><div class="dx-stage block">
+        <div class="att-group">
+          <div class="attachment"><span class="att-media">pdf</span><span class="att-main"><span class="att-title">liner-notes.pdf</span><span class="att-desc">PDF · 2.4 MB</span></span><button class="att-action" type="button" aria-label="Remove">✕</button></div>
+          <div class="attachment"><span class="att-media image" aria-hidden="true"></span><span class="att-main"><span class="att-title">cover-front.jpg</span><span class="att-desc">Image · 840 KB</span></span><button class="att-action" type="button" aria-label="Remove">✕</button></div>
+          <div class="attachment" data-state="uploading" style="--v:.64"><span class="att-media">flac</span><span class="att-main"><span class="att-title">side-a.flac</span><span class="att-desc">Uploading · 64%</span></span><button class="att-action" type="button" aria-label="Cancel upload">✕</button></div>
+          <div class="attachment" data-state="error"><span class="att-media">wav</span><span class="att-main"><span class="att-title">side-b.wav</span><span class="att-desc">Too large · limit is 500 MB</span></span><button class="att-action" type="button" aria-label="Remove">✕</button></div>
+        </div>
+        <div class="att-group">
+          <div class="attachment sm"><span class="att-media">txt</span><span class="att-title">tracklist.txt</span></div>
+          <div class="attachment sm"><span class="att-media">csv</span><span class="att-title">library.csv</span></div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- ══ Avatar ══ -->
+    <style data-css="avatar">
+      .avatar { position: relative; width: 32px; height: 32px; display: inline-grid; place-content: center; flex: none; background: var(--ink); color: var(--paper); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+      .avatar.muted { background: var(--inset); color: var(--steel-text); }
+      .avatar.outline { background: var(--panel); color: var(--ink); border: 1px solid var(--rule); }
+      .avatar.sm { width: 24px; height: 24px; font-size: 10px; }
+      .avatar.lg { width: 48px; height: 48px; font-size: 18px; }
+      .avatar img { width: 100%; height: 100%; object-fit: cover; }
+      .avatar .lamp { position: absolute; right: -3px; bottom: -3px; outline: 2px solid var(--paper); }
+      .avatar-group { display: inline-flex; }
+      .avatar-group .avatar { outline: 2px solid var(--paper); }
+      .avatar-group .avatar + .avatar { margin-left: -8px; }
+    </style>
+    <section class="dx-view" data-view="avatar" data-needs="lamp" hidden>
+      <header class="dx-head"><p data-es="Un cuadrado con iniciales o imagen. Nada de círculos: los círculos se reservan para perillas y pilotos.">A square with initials or an image. No circles: those are reserved for knobs and lamps.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <span class="avatar lg">DR</span>
+        <span class="avatar">DR</span>
+        <span class="avatar sm">DR</span>
+        <span class="avatar outline">HG</span>
+        <span class="avatar muted">—</span>
+        <span class="avatar">IA<span class="lamp ok"></span></span>
+        <span class="avatar-group"><span class="avatar">DR</span><span class="avatar outline">HG</span><span class="avatar muted">+3</span></span>
+      </div></div>
+    </section>
+
+    <!-- ══ Badge ══ -->
+    <style data-css="badge">
+      .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; line-height: 1; padding: 3px 7px; border: 1px solid var(--line); color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; text-decoration: none; }
+      .badge.muted { color: var(--steel-text); }
+      .badge.solid { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+      .badge.signal { background: var(--signal); border-color: var(--signal); color: var(--on-signal); font-weight: 600; }
+      .badge.tone { color: var(--sc); border-color: color-mix(in srgb, var(--sc) 45%, var(--line)); }
+      .badge.caps { font-size: 10.5px; font-weight: 600; letter-spacing: .3px; text-transform: uppercase; color: var(--sc, var(--steel-text)); border-color: var(--sc, var(--rule)); }
+      .badge.strike { color: var(--steel-text); text-decoration: line-through; text-decoration-color: var(--signal); }
+      a.badge:hover { border-color: var(--rule); }
+    </style>
+    <section class="dx-view" data-view="badge" data-needs="lamp" hidden>
+      <header class="dx-head"><p data-es="Etiqueta pequeña en contorno. El color entra por la variable <code>--sc</code>; el único relleno naranja es el contador.">A small outlined label. Colour comes in through the <code>--sc</code> variable; the only orange fill is the counter.</p></header>
+      <div class="dx-ex"><div class="dx-stage block">
+        <div class="btn-group">
+          <span class="badge">Jazz</span>
+          <span class="badge muted">Vinyl</span>
+          <span class="badge solid">New</span>
+          <span class="badge signal">12</span>
+          <span class="badge strike">Live</span>
+          <span class="badge"><span class="lamp live"></span>On air</span>
+        </div>
+        <div class="btn-group">
+          <span class="badge tone" style="--sc: var(--ok-text)">Verified</span>
+          <span class="badge tone" style="--sc: var(--medium-text)">Pending</span>
+          <span class="badge tone" style="--sc: var(--sev-critical)">Failed</span>
+          <span class="badge tone" style="--sc: var(--c-blue)">Stereo</span>
+        </div>
+        <div class="btn-group">
+          <span class="badge caps" style="--sc: var(--sev-critical)">Error</span>
+          <span class="badge caps" style="--sc: var(--medium-text)">Warning</span>
+          <span class="badge caps" style="--sc: var(--ok-text)">OK</span>
+          <span class="badge caps">Info</span>
+        </div>
+      </div></div>
+      <ul class="dx-rules">
+        <li data-es="Como texto, el estado usa las variantes accesibles (<code>--signal-text</code>, <code>--medium-text</code>, <code>--ok-text</code>).">As text, status uses the accessible variants (<code>--signal-text</code>, <code>--medium-text</code>, <code>--ok-text</code>).</li>
+        <li data-es="<code>.badge.strike</code> marca algo excluido: gris tachado en naranja.">Use <code>.badge.strike</code> for something excluded: grey, struck through in orange.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Breadcrumb ══ -->
+    <style data-css="breadcrumb">
+      .breadcrumb ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font-size: 12.5px; }
+      .breadcrumb li { display: inline-flex; align-items: center; gap: 8px; color: var(--steel-text); }
+      .breadcrumb li + li::before { content: "/"; color: var(--rule); }
+      .breadcrumb a { color: var(--steel-text); text-decoration: none; }
+      .breadcrumb a:hover { color: var(--ink); }
+      .breadcrumb [aria-current="page"] { color: var(--ink); font-weight: 600; }
+      .breadcrumb.path { font-family: var(--mono); }
+      .breadcrumb.path ol { font-size: 11.5px; }
+    </style>
+    <section class="dx-view" data-view="breadcrumb" hidden>
+      <header class="dx-head"><p data-es="La ruta hasta la página actual. El último tramo es texto en tinta, no un enlace.">The path to the current page. The last segment is ink text, not a link.</p></header>
+      <div class="dx-ex"><div class="dx-stage block start">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><ol>
+          <li><a href="#breadcrumb">Library</a></li><li><a href="#breadcrumb">Jazz</a></li><li><a href="#breadcrumb">Albums</a></li><li><span aria-current="page">Kind of Blue</span></li>
+        </ol></nav>
+        <nav class="breadcrumb" aria-label="Breadcrumb"><ol>
+          <li><a href="#breadcrumb">Home</a></li><li><span>…</span></li><li><a href="#breadcrumb">Stations</a></li><li><span aria-current="page">Presets</span></li>
+        </ol></nav>
+        <nav class="breadcrumb path" aria-label="File path"><ol>
+          <li><a href="#breadcrumb">music</a></li><li><a href="#breadcrumb">vinyl</a></li><li><span aria-current="page">side-a.flac</span></li>
+        </ol></nav>
+      </div></div>
+    </section>
+
+    <!-- ══ Bubble ══ -->
+    <style data-css="bubble">
+      .bubble-thread { display: flex; flex-direction: column; gap: 8px; }
+      .bubble { position: relative; align-self: flex-start; max-width: 80%; padding: 8px 11px; background: var(--panel); border: 1px solid var(--line); font-size: 12.5px; line-height: 1.5; overflow-wrap: anywhere; }
+      .bubble.end { align-self: flex-end; background: var(--inset); }
+      .bubble.live { border-left: 3px solid var(--signal); }
+      .bubble.outline { background: none; border-color: var(--rule); }
+      .bubble.muted { background: none; border-style: dashed; color: var(--steel-text); }
+      .bubble.ghost { background: none; border-color: transparent; padding-inline: 0; max-width: none; }
+      .bubble.danger { border-left: 3px solid var(--sev-critical); }
+      .bubble-group { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; }
+      .bubble-group.end { align-items: flex-end; }
+      .bubble-group .bubble { align-self: auto; }
+      .bubble.has-reactions { margin-bottom: 10px; }
+      .bubble-reactions { position: absolute; right: 8px; bottom: -11px; display: flex; gap: 3px; }
+      .bubble-reactions span { font-size: 10.5px; line-height: 16px; padding: 0 5px; background: var(--panel); border: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+      a.bubble { color: var(--signal-text); text-decoration: none; }
+      a.bubble:hover { border-color: var(--rule); }
+    </style>
+    <section class="dx-view" data-view="bubble" hidden>
+      <header class="dx-head"><p data-es="El contenido de una conversación dentro de un globo rectangular. Los propios se hunden y se alinean a la derecha; el borde naranja marca la respuesta que se está escribiendo.">Conversation content inside a rectangular bubble. Your own are sunken and aligned right; the orange edge marks the reply being written.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="bubble-thread">
+          <div class="bubble end">Which record should I play tonight?</div>
+          <div class="bubble has-reactions">Something slow. Side A of Kind of Blue is 21 minutes.<span class="bubble-reactions"><span>♥ 2</span><span>✓ 1</span></span></div>
+          <div class="bubble-group end"><div class="bubble end">Good idea.</div><div class="bubble end">Is the stylus clean?</div></div>
+          <div class="bubble live">Cleaned yesterday. Setting the level now</div>
+          <div class="bubble muted">The receiver joined the conversation.</div>
+          <div class="bubble danger">The message could not be sent.</div>
+          <a class="bubble outline" href="#bubble">Open the tracklist →</a>
+        </div>
+      </div></div>
+      <ul class="dx-rules">
+        <li data-es="Variantes: <code>.end</code>, <code>.live</code>, <code>.outline</code>, <code>.muted</code>, <code>.ghost</code> y <code>.danger</code>. Ancho máximo del 80 %, salvo <code>.ghost</code>.">Variants: <code>.end</code>, <code>.live</code>, <code>.outline</code>, <code>.muted</code>, <code>.ghost</code> and <code>.danger</code>. Width caps at 80%, except <code>.ghost</code>.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Button ══ -->
+    <style data-css="button">
+      .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; font-family: var(--sans); font-size: 12.5px; font-weight: 500; line-height: 1; padding: 8px 13px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; white-space: nowrap; text-decoration: none; transition: border-color .12s, background-color .12s, color .12s; }
+      .btn:hover { border-color: var(--rule); }
+      .btn:disabled { opacity: .45; cursor: not-allowed; }
+      .btn-primary { background: var(--signal); border-color: var(--signal); color: var(--on-signal); font-weight: 600; }
+      .btn-primary:hover { border-color: var(--signal); filter: brightness(1.06); }
+      .btn-primary:disabled { background: var(--inset); border-color: var(--inset); color: var(--steel-text); opacity: 1; filter: none; }
+      .btn-solid { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+      .btn-solid:hover { border-color: var(--ink); opacity: .88; }
+      .btn-danger { color: var(--sev-critical); border-color: color-mix(in srgb, var(--sev-critical) 40%, var(--line)); }
+      .btn-danger:hover, .btn-danger-solid { background: var(--sev-critical); border-color: var(--sev-critical); color: #fff; }
+      .btn-ghost { background: none; border-color: transparent; color: var(--steel-text); }
+      .btn-ghost:hover { color: var(--ink); border-color: var(--line); }
+      .btn-link { background: none; border-color: transparent; padding-inline: 0; color: var(--signal-text); }
+      .btn-link:hover { border-color: transparent; text-decoration: underline; }
+      .btn-dashed { background: none; border: 1px dashed var(--rule); }
+      .btn-dashed:hover { border-color: var(--signal); color: var(--signal-text); }
+      .btn-sm { font-size: 11.5px; padding: 5px 9px; }
+      .btn-lg { font-size: 13px; font-weight: 600; padding: 11px 24px; }
+      .btn-icon { padding: 0; width: 32px; height: 32px; }
+      .btn-group { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+      .btn-sep { width: 1px; height: 22px; background: var(--line); }
+    </style>
+    <section class="dx-view" data-view="button" hidden>
+      <header class="dx-head"><p data-es="Un rectángulo con borde de 1 px. El primario es el único elemento con relleno naranja de la vista; el resto se distingue por contorno y color de texto.">A rectangle with a 1 px border. The primary is the only orange-filled element in a view; the rest differ by outline and text colour.</p></header>
+      <div class="dx-ex"><div class="dx-stage block">
+        <div class="btn-group">
+          <button class="btn btn-primary" type="button">Play</button>
+          <button class="btn" type="button">Add to queue</button>
+          <button class="btn btn-solid" type="button">Save</button>
+          <button class="btn btn-ghost" type="button">Cancel</button>
+          <button class="btn btn-link" type="button">View details</button>
+          <span class="btn-sep"></span>
+          <button class="btn btn-danger" type="button">Delete record</button>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-sm" type="button">Small</button>
+          <button class="btn" type="button">Default</button>
+          <button class="btn btn-lg" type="button">Large</button>
+          <button class="btn btn-primary btn-lg" type="button" disabled>Save preset</button>
+          <button class="btn" type="button" disabled>Export</button>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-icon" type="button" aria-label="Add">+</button>
+          <button class="btn btn-icon" type="button" aria-label="Close">✕</button>
+          <button class="btn" type="button">Next track →</button>
+          <button class="btn btn-dashed" type="button">+ New playlist</button>
+        </div>
+      </div></div>
+      <ul class="dx-rules">
+        <li data-es="Un solo <code>.btn-primary</code> por vista. Si hay dos acciones importantes, la segunda es secundaria o <code>.btn-solid</code>.">One <code>.btn-primary</code> per view. If two actions matter, the second is secondary or <code>.btn-solid</code>.</li>
+        <li data-es="<code>.btn-danger</code> no se rellena hasta el hover: lo destructivo no compite con lo primario.">The <code>.btn-danger</code> fill only appears on hover: destructive never competes with primary.</li>
+        <li data-es="<code>.btn-dashed</code> se reserva para crear algo nuevo.">Keep <code>.btn-dashed</code> for creating something new.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Button Group ══ -->
+    <style data-css="button-group">
+      .btn-join { display: inline-flex; }
+      .btn-join > * + * { margin-left: -1px; }
+      .btn-join > *:hover, .btn-join > *:focus-visible, .btn-join > *:focus { position: relative; z-index: 1; }
+      .btn-join.v { flex-direction: column; }
+      .btn-join.v > * + * { margin-left: 0; margin-top: -1px; }
+      .btn-join > .btn-primary + .btn-primary { margin-left: 0; border-left-color: color-mix(in srgb, var(--on-signal) 35%, var(--signal)); }
+    </style>
+    <section class="dx-view" data-view="button-group" data-needs="button input" hidden>
+      <header class="dx-head"><p data-es="Botones relacionados unidos en una sola pieza: comparten el borde intermedio, como una fila de teclas.">Related buttons joined into one piece: they share the border between them, like a row of keys.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <div class="btn-join" role="group" aria-label="Transport"><button class="btn" type="button">Previous</button><button class="btn" type="button">Pause</button><button class="btn" type="button">Next</button></div>
+        <div class="btn-join" role="group"><button class="btn btn-primary" type="button">Save preset</button><button class="btn btn-primary btn-icon" type="button" aria-label="More save options">▾</button></div>
+        <div class="btn-join"><input class="input" type="text" aria-label="Frequency" value="98.4" style="width: 90px"><button class="btn" type="button">Tune</button></div>
+        <div class="btn-join v" role="group" aria-label="Volume"><button class="btn btn-icon" type="button" aria-label="Volume up">+</button><button class="btn btn-icon" type="button" aria-label="Volume down">−</button></div>
+      </div></div>
+    </section>
+
+    <!-- ══ Calendar ══ -->
+    <style data-css="calendar">
+      .calendar { width: 252px; max-width: 100%; background: var(--panel); border: 1px solid var(--rule); padding: 12px; }
+      .cal-head { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+      .cal-title { flex: 1; text-align: center; font-size: 12.5px; font-weight: 600; }
+      .cal-title::first-letter { text-transform: uppercase; }
+      .cal-nav { width: 26px; height: 26px; background: var(--paper); border: 1px solid var(--line); color: var(--ink); cursor: pointer; }
+      .cal-nav:hover { border-color: var(--rule); }
+      .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+      .cal-dow { font-size: 10.5px; color: var(--steel-text); text-align: center; padding: 4px 0; text-transform: uppercase; }
+      .cal-day { aspect-ratio: 1; padding: 0; border: 1px solid transparent; background: none; color: var(--ink); font-size: 12px; font-variant-numeric: tabular-nums; cursor: pointer; }
+      .cal-day:hover { border-color: var(--rule); }
+      .cal-day.out { color: var(--steel); }
+      .cal-day.today { box-shadow: inset 0 -2px 0 var(--signal); }
+      .cal-day[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+    </style>
+    <section class="dx-view" data-view="calendar" hidden>
+      <header class="dx-head"><p data-es="Rejilla mensual para elegir una fecha. El día elegido se invierte como una tecla pulsada; hoy lleva un subrayado naranja. Los nombres siguen el idioma de la página.">A month grid to pick a date. The chosen day inverts like a pressed key; today carries an orange underline. Names follow the page language.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <div class="calendar" data-month="2026-11" data-selected="2026-11-20"></div>
+      </div>
+      <script data-js="calendar">
+        // Renders every .calendar from data-month ("YYYY-MM") and data-selected ("YYYY-MM-DD").
+        // Fires a bubbling "change" event with the chosen date in event.detail.
+        function renderCalendar(el) {
+          const lang = document.documentElement.lang || 'en';
+          const [y, m] = el.dataset.month.split('-').map(Number);
+          const first = new Date(y, m - 1, 1);
+          const iso = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+          let html = '<div class="cal-head"><button class="cal-nav" type="button" data-cal="-1" aria-label="Previous month">‹</button>'
+            + '<span class="cal-title">' + first.toLocaleDateString(lang, { month: 'long', year: 'numeric' }) + '</span>'
+            + '<button class="cal-nav" type="button" data-cal="1" aria-label="Next month">›</button></div><div class="cal-grid">';
+          for (let i = 0; i < 7; i++) html += '<span class="cal-dow">' + new Date(2024, 0, 1 + i).toLocaleDateString(lang, { weekday: 'narrow' }) + '</span>';
+          const offset = (first.getDay() + 6) % 7;   // weeks start on Monday
+          for (let i = 0; i < 42; i++) {
+            const d = new Date(y, m - 1, 1 - offset + i), key = iso(d);
+            html += '<button type="button" class="cal-day' + (d.getMonth() !== m - 1 ? ' out' : '') + (key === iso(new Date()) ? ' today' : '')
+              + '" data-date="' + key + '" aria-pressed="' + (key === el.dataset.selected) + '">' + d.getDate() + '</button>';
+          }
+          el.innerHTML = html + '</div>';
+        }
+        document.addEventListener('click', e => {
+          const cal = e.target.closest('.calendar');
+          if (!cal) return;
+          const nav = e.target.closest('[data-cal]'), day = e.target.closest('.cal-day');
+          if (nav) {
+            const [y, m] = cal.dataset.month.split('-').map(Number), d = new Date(y, m - 1 + Number(nav.dataset.cal), 1);
+            cal.dataset.month = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+          } else if (day) {
+            cal.dataset.selected = day.dataset.date; cal.dataset.month = day.dataset.date.slice(0, 7);
+          } else return;
+          renderCalendar(cal);
+          if (day) cal.dispatchEvent(new CustomEvent('change', { bubbles: true, detail: cal.dataset.selected }));
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+          const all = () => document.querySelectorAll('.calendar').forEach(renderCalendar);
+          all();
+          new MutationObserver(all).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+        });
+      </script>
+      </div>
+    </section>

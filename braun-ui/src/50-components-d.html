@@ -1,0 +1,386 @@
+
+    <!-- ══ Input ══ -->
+    <style data-css="input">
+      .input { width: 100%; min-width: 0; padding: 8px 11px; font-family: var(--sans); font-size: 13px; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 0; }
+      .input:focus { outline: none; border-color: var(--signal); }
+      .input::placeholder { color: var(--steel-text); opacity: .8; }
+      .input:disabled { opacity: .5; cursor: not-allowed; }
+      .input[aria-invalid="true"] { border-color: var(--sev-critical); }
+      .input.mono { font-family: var(--mono); font-size: 12px; }
+      .input.sm { padding: 5px 9px; font-size: 12.5px; }
+      .input[type="file"] { padding: 5px; font-size: 12px; }
+      .input[type="file"]::file-selector-button { margin-right: 10px; padding: 4px 10px; font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); cursor: pointer; }
+    </style>
+    <section class="dx-view" data-view="input" data-needs="field label card" hidden>
+      <header class="dx-head"><p data-es="Los campos usan el color del fondo de página dentro de un panel blanco, así se leen como huecos. El foco cambia el borde a naranja, sin halo.">Fields use the page colour inside a white panel, so they read as recesses. Focus turns the border orange, with no halo.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="card"><div class="card-body">
+          <div class="field"><label class="label" for="in-name">Station name</label><input class="input" id="in-name" type="text" placeholder="Radio Uno"></div>
+          <div class="field"><label class="label" for="in-mail">Email</label><input class="input" id="in-mail" type="email" value="dieter@example" aria-invalid="true"><span class="field-error">Enter a full address, like name@example.com.</span></div>
+          <div class="field"><label class="label" for="in-freq">Frequency</label><input class="input mono" id="in-freq" type="text" value="98.400 MHz"></div>
+          <div class="field"><label class="label" for="in-file">Cover image</label><input class="input" id="in-file" type="file"></div>
+          <div class="field"><label class="label" for="in-off">Serial number</label><input class="input" id="in-off" type="text" value="T1000-04512" disabled></div>
+        </div></div>
+      </div></div>
+      <ul class="dx-rules">
+        <li data-es="Los datos de máquina (frecuencias, series, rutas) usan <code>.input.mono</code>.">Machine data (frequencies, serials, paths) uses <code>.input.mono</code>.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Input Group ══ -->
+    <style data-css="input-group">
+      .input-group { display: flex; align-items: stretch; min-width: 0; background: var(--paper); border: 1px solid var(--line); }
+      .input-group:focus-within { border-color: var(--signal); }
+      .input-group .input { flex: 1; border: none; background: none; }
+      .ig-addon { display: flex; align-items: center; gap: 6px; padding: 0 10px; font-size: 12px; color: var(--steel-text); white-space: nowrap; border-inline: 1px solid var(--line); }
+      .ig-addon:first-child { border-left: none; }
+      .ig-addon:last-child { border-right: none; }
+      .ig-addon.plain { border: none; padding-right: 0; }
+      .ig-btn { padding: 0 12px; background: var(--panel); border: none; border-left: 1px solid var(--line); color: var(--ink); font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+      .ig-btn:hover { background: var(--inset); }
+    </style>
+    <section class="dx-view" data-view="input-group" data-needs="input kbd card" hidden>
+      <header class="dx-head"><p data-es="Un campo con piezas pegadas: una unidad, un prefijo, un atajo o un botón. Todo el grupo comparte un solo borde, que pasa a naranja con el foco.">A field with parts attached: a unit, a prefix, a shortcut or a button. The whole group shares one border, which turns orange on focus.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="card"><div class="card-body">
+          <div class="input-group"><input class="input mono" type="text" value="98.4" aria-label="Frequency"><span class="ig-addon">MHz</span></div>
+          <div class="input-group"><span class="ig-addon">https://</span><input class="input" type="text" placeholder="stream.example.com" aria-label="Stream address"></div>
+          <div class="input-group"><input class="input" type="search" placeholder="Search the library" aria-label="Search the library"><span class="ig-addon plain"><kbd class="kbd">⌘ K</kbd></span><span class="ig-addon plain" style="padding-right: 10px">214 records</span></div>
+          <div class="input-group"><input class="input" type="text" placeholder="Paste a playlist link" aria-label="Playlist link"><button class="ig-btn" type="button">Import</button></div>
+        </div></div>
+      </div></div>
+    </section>
+
+    <!-- ══ Input OTP ══ -->
+    <style data-css="input-otp">
+      .otp { display: inline-flex; align-items: center; }
+      .otp input { width: 38px; height: 44px; margin-left: -1px; padding: 0; text-align: center; font-family: var(--sans); font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 0; }
+      .otp input:focus { position: relative; z-index: 1; outline: none; border-color: var(--signal); }
+      .otp-sep { width: 12px; height: 1px; margin: 0 6px 0 7px; background: var(--rule); }
+    </style>
+    <section class="dx-view" data-view="input-otp" hidden>
+      <header class="dx-head"><p data-es="Casillas de un dígito para un código de un solo uso. Al escribir salta a la siguiente; se puede pegar el código completo.">One-digit boxes for a one-time code. Typing jumps to the next one; the whole code can be pasted.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <div class="otp" role="group" aria-label="Pairing code">
+          <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 1" value="4">
+          <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 2" value="8">
+          <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 3">
+          <span class="otp-sep"></span>
+          <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 4">
+          <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 5">
+          <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 6">
+        </div>
+      </div>
+      <script data-js="input-otp">
+        (function () {
+          const boxes = input => Array.from(input.closest('.otp').querySelectorAll('input'));
+          document.addEventListener('input', e => {
+            const input = e.target.closest('.otp input');
+            if (!input) return;
+            input.value = input.value.replace(/\D/g, '').slice(-1);
+            const all = boxes(input), next = all[all.indexOf(input) + 1];
+            if (input.value && next) next.focus();
+          });
+          document.addEventListener('keydown', e => {
+            const input = e.target.closest && e.target.closest('.otp input');
+            if (!input || e.key !== 'Backspace' || input.value) return;
+            const all = boxes(input), prev = all[all.indexOf(input) - 1];
+            if (prev) { prev.value = ''; prev.focus(); }
+          });
+          document.addEventListener('paste', e => {
+            const input = e.target.closest && e.target.closest('.otp input');
+            if (!input) return;
+            e.preventDefault();
+            const digits = (e.clipboardData.getData('text') || '').replace(/\D/g, '').split('');
+            boxes(input).forEach((box, i) => { box.value = digits[i] || ''; });
+          });
+        })();
+      </script>
+      </div>
+    </section>
+
+    <!-- ══ Item ══ -->
+    <style data-css="item">
+      .item { display: flex; align-items: center; gap: 12px; width: 100%; min-width: 0; padding: 11px 14px; background: var(--panel); border: 1px solid var(--line); color: inherit; font: inherit; text-align: left; text-decoration: none; }
+      a.item, button.item { cursor: pointer; }
+      a.item:hover, button.item:hover { background: var(--inset); }
+      .item-list { background: var(--panel); border: 1px solid var(--rule); }
+      .item-list .item { border: none; border-bottom: 1px solid var(--line); }
+      .item-list .item:last-child { border-bottom: none; }
+      .item-media { width: 32px; height: 32px; flex: none; display: grid; place-content: center; background: var(--inset); border: 1px solid var(--line); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+      .item-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+      .item-title { font-size: 12.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .item-desc { font-size: 11.5px; color: var(--steel-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .item-meta { flex: none; font-family: var(--mono); font-size: 11px; color: var(--steel-text); font-variant-numeric: tabular-nums; }
+      .item-actions { flex: none; display: flex; gap: 6px; }
+      /* A 4 px stripe on the left carries the state of the row. */
+      .item.flag { border-left: 4px solid var(--sc, var(--steel)); }
+      .item-list .item.flag { border-left: 4px solid var(--sc, var(--steel)); }
+      .item.on { background: var(--inset); }
+      .item.sm { padding: 7px 12px; gap: 10px; }
+    </style>
+    <section class="dx-view" data-view="item" data-needs="button badge" hidden>
+      <header class="dx-head"><p data-es="Una fila flexible para listas: un medio a la izquierda, título y descripción, y datos o acciones a la derecha. Una franja de 4 px indica el estado de la fila.">A flexible row for lists: media on the left, title and description, then data or actions on the right. A 4 px stripe shows the row's state.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="item-list">
+          <button class="item flag on" type="button" style="--sc: var(--signal)"><span class="item-media">01</span><span class="item-main"><span class="item-title">So What</span><span class="item-desc">Miles Davis · Kind of Blue</span></span><span class="item-meta">4:12 / 9:22</span></button>
+          <button class="item flag" type="button" style="--sc: var(--line)"><span class="item-media">02</span><span class="item-main"><span class="item-title">Freddie Freeloader</span><span class="item-desc">Miles Davis · Kind of Blue</span></span><span class="item-meta">9:46</span></button>
+          <button class="item flag" type="button" style="--sc: var(--line)"><span class="item-media">03</span><span class="item-main"><span class="item-title">Blue in Green</span><span class="item-desc">Miles Davis · Kind of Blue</span></span><span class="item-meta">5:37</span></button>
+        </div>
+        <div class="item"><span class="item-media">FM</span><span class="item-main"><span class="item-title">Jazz FM</span><span class="item-desc">101.7 MHz · Stereo</span></span><span class="item-actions"><button class="btn btn-sm" type="button">Edit</button><button class="btn btn-sm" type="button">Tune</button></span></div>
+        <a class="item sm" href="#item"><span class="item-main"><span class="item-title">Your firmware is up to date</span></span><span class="badge tone" style="--sc: var(--ok-text)">2.4.1</span><span class="item-meta">→</span></a>
+      </div></div>
+      <ul class="dx-rules">
+        <li data-es="Dentro de <code>.item-list</code> las filas comparten un contorno y se separan con una línea suave.">Inside <code>.item-list</code> rows share one outline and are separated by a soft line.</li>
+        <li data-es="Los datos de máquina van en <code>.item-meta</code>, en mono y a la derecha.">Machine data goes in <code>.item-meta</code>, in mono on the right.</li>
+      </ul>
+    </section>
+
+    <!-- ══ Kbd ══ -->
+    <style data-css="kbd">
+      .kbd { display: inline-block; padding: 1px 5px; font-family: var(--mono); font-size: 10.5px; line-height: 1.5; color: var(--steel-text); background: var(--paper); border: 1px solid var(--line); border-bottom-width: 2px; white-space: nowrap; }
+      .kbd-group { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--steel-text); }
+    </style>
+    <section class="dx-view" data-view="kbd" data-needs="button" hidden>
+      <header class="dx-head"><p data-es="Una tecla: mono pequeño con el borde inferior más grueso. Para mostrar atajos de teclado junto a una acción.">A key: small mono with a thicker bottom border. For showing keyboard shortcuts next to an action.</p></header>
+      <div class="dx-ex"><div class="dx-stage">
+        <kbd class="kbd">Space</kbd>
+        <span class="kbd-group"><kbd class="kbd">⌘</kbd><kbd class="kbd">K</kbd></span>
+        <span class="kbd-group"><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Shift</kbd>+<kbd class="kbd">M</kbd></span>
+        <button class="btn" type="button">Mute <kbd class="kbd">M</kbd></button>
+      </div></div>
+    </section>
+
+    <!-- ══ Label ══ -->
+    <style data-css="label">
+      .label { font-size: 11.5px; font-weight: 600; line-height: 1.4; }
+      .label .req { color: var(--signal-text); }
+      .label .opt-note { font-weight: 400; color: var(--steel-text); }
+      .label.caps { font-size: 11px; color: var(--steel-text); text-transform: uppercase; letter-spacing: .4px; }
+      :disabled + .label, .label[aria-disabled="true"] { opacity: .5; }
+    </style>
+    <section class="dx-view" data-view="label" data-needs="input field checkbox card" hidden>
+      <header class="dx-head"><p data-es="El nombre de un control: 11.5 px en negrita, encima del campo. La variante en mayúsculas rotula secciones.">The name of a control: 11.5 px semibold, above the field. The uppercase variant titles sections.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="card"><div class="card-body">
+          <div class="field"><label class="label" for="lb-1">Name <span class="req">*</span></label><input class="input" id="lb-1" type="text"></div>
+          <div class="field"><label class="label" for="lb-2">Notes <span class="opt-note">(optional)</span></label><input class="input" id="lb-2" type="text"></div>
+          <span class="label caps">Section label</span>
+          <label class="check"><input type="checkbox" id="lb-3"><span class="label">Use as default source</span></label>
+        </div></div>
+      </div></div>
+    </section>
+
+    <!-- ══ Marker ══ -->
+    <style data-css="marker">
+      .marker { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--steel-text); text-decoration: none; background: none; border: none; padding: 0; text-align: left; }
+      .marker-icon { width: 14px; flex: none; text-align: center; }
+      .marker.border { padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+      .marker.separator { justify-content: center; gap: 12px; font-size: 11px; }
+      .marker.separator::before, .marker.separator::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+      a.marker:hover, button.marker:hover { color: var(--ink); cursor: pointer; }
+      .marker.live { color: var(--ink); }
+      .marker.live .marker-content { animation: glow 2.6s ease-in-out infinite; }
+      .marker-list { display: flex; flex-direction: column; gap: 10px; }
+      @media (prefers-reduced-motion: reduce) { .marker.live .marker-content { animation: none; } }
+    </style>
+    <section class="dx-view" data-view="marker" data-needs="lamp" hidden>
+      <header class="dx-head"><p data-es="Una línea de sistema dentro de una conversación: un estado en curso, una nota, una fila con borde o un separador con rótulo.">A system line inside a conversation: a status in progress, a note, a bordered row or a labelled separator.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="marker-list">
+          <div class="marker separator">Today</div>
+          <div class="marker"><span class="marker-icon">✓</span><span class="marker-content">Scanned 16 presets</span></div>
+          <div class="marker border"><span class="marker-icon">→</span><span class="marker-content">Switched source to Tuner</span></div>
+          <div class="marker live" role="status"><span class="marker-icon"><span class="lamp live"></span></span><span class="marker-content">Tuning to 98.4 MHz</span></div>
+          <a class="marker" href="#marker"><span class="marker-icon">▸</span><span class="marker-content">Show 3 earlier events</span></a>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- ══ Menubar ══ -->
+    <style data-css="menubar">
+      .menubar { display: inline-flex; max-width: 100%; padding: 3px; background: var(--panel); border: 1px solid var(--rule); }
+      .mb-btn { padding: 6px 11px; background: none; border: none; color: var(--ink); font-size: 12.5px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+      .mb-btn:hover, .mb-btn[aria-expanded="true"] { background: var(--inset); }
+    </style>
+    <section class="dx-view" data-view="menubar" data-needs="popover dropdown-menu kbd" data-js="popover dropdown-menu" hidden>
+      <header class="dx-head"><p data-es="La barra de menús de una aplicación de escritorio. Con un menú abierto, pasar por otro título lo abre.">The menu bar of a desktop application. With one menu open, moving over another title opens it.</p></header>
+      <div class="dx-ex"><div class="dx-stage start" style="min-height: 280px">
+        <div class="menubar" role="menubar">
+          <div class="pop-anchor">
+            <button class="mb-btn" type="button" data-pop aria-haspopup="menu" aria-expanded="false">Playback</button>
+            <div class="pop menu" role="menu" hidden>
+              <button class="mi" type="button" role="menuitem">Play or pause<kbd class="kbd">Space</kbd></button>
+              <button class="mi" type="button" role="menuitem">Next track<kbd class="kbd">→</kbd></button>
+              <button class="mi" type="button" role="menuitem">Previous track<kbd class="kbd">←</kbd></button>
+              <div class="mi-sep"></div>
+              <button class="mi" type="button" role="menuitemcheckbox" aria-checked="false">Mute</button>
+            </div>
+          </div>
+          <div class="pop-anchor">
+            <button class="mb-btn" type="button" data-pop aria-haspopup="menu" aria-expanded="false">Library</button>
+            <div class="pop menu" role="menu" hidden>
+              <button class="mi" type="button" role="menuitem">Add record<kbd class="kbd">⌘ N</kbd></button>
+              <button class="mi" type="button" role="menuitem">Import a list</button>
+              <button class="mi" type="button" role="menuitem" disabled>Export</button>
+            </div>
+          </div>
+          <div class="pop-anchor">
+            <button class="mb-btn" type="button" data-pop aria-haspopup="menu" aria-expanded="false">View</button>
+            <div class="pop menu" role="menu" hidden>
+              <button class="mi" type="button" role="menuitemradio" aria-checked="true">List</button>
+              <button class="mi" type="button" role="menuitemradio" aria-checked="false">Covers</button>
+              <div class="mi-sep"></div>
+              <button class="mi" type="button" role="menuitemcheckbox" aria-checked="true">Show level meters</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script data-js="menubar">
+        document.addEventListener('pointerover', e => {
+          const b = e.target.closest('.mb-btn');
+          if (!b || b.getAttribute('aria-expanded') === 'true') return;
+          if (b.closest('.menubar').querySelector('.mb-btn[aria-expanded="true"]')) b.click();
+        });
+      </script>
+      </div>
+    </section>
+
+    <!-- ══ Message ══ -->
+    <style data-css="message">
+      .msg-list { display: flex; flex-direction: column; gap: 12px; }
+      .msg { display: flex; align-items: flex-end; gap: 10px; }
+      .msg.end { flex-direction: row-reverse; }
+      .msg-main { min-width: 0; max-width: 80%; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+      .msg.end .msg-main { align-items: flex-end; }
+      .msg-main .bubble { max-width: 100%; align-self: auto; }
+      .msg-head { font-size: 11px; color: var(--steel-text); }
+      .msg-head b { color: var(--ink); font-weight: 600; }
+      .msg-foot { font-size: 10.5px; color: var(--steel-text); }
+      /* Typing indicator: three ticks that rise and fall. */
+      .typing { display: inline-flex; align-items: center; gap: 3px; height: 1.5em; vertical-align: top; }
+      .typing i { width: 2px; height: 11px; background: var(--signal); animation: typing 1s ease-in-out infinite; }
+      .typing i:nth-child(2) { animation-delay: .15s; }
+      .typing i:nth-child(3) { animation-delay: .3s; }
+      @keyframes typing { 0%, 100% { transform: scaleY(.35); } 50% { transform: scaleY(1); } }
+      @media (prefers-reduced-motion: reduce) { .typing i { animation: none; } }
+    </style>
+    <section class="dx-view" data-view="message" data-needs="bubble avatar attachment" hidden>
+      <header class="dx-head"><p data-es="Un mensaje de una conversación: avatar, cabecera con el remitente, el globo y un pie con el estado de entrega. El indicador de escritura son tres marcas que suben y bajan.">A message in a conversation: avatar, a header with the sender, the bubble and a footer with delivery state. The typing indicator is three ticks rising and falling.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="msg-list">
+          <div class="msg"><span class="avatar outline">HG</span><div class="msg-main"><span class="msg-head"><b>Hans</b> · 20:14</span><div class="bubble">Did you finish digitising side B?</div></div></div>
+          <div class="msg end"><span class="avatar">DR</span><div class="msg-main"><div class="bubble end">Yes. Sending you the file now.</div><div class="attachment"><span class="att-media">flac</span><span class="att-main"><span class="att-title">side-b.flac</span><span class="att-desc">FLAC · 212 MB</span></span></div><span class="msg-foot">Delivered</span></div></div>
+          <div class="msg"><span class="avatar outline">HG</span><div class="msg-main"><div class="bubble live"><span class="typing" role="status" aria-label="Hans is typing"><i></i><i></i><i></i></span></div></div></div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- ══ Message Scroller ══ -->
+    <style data-css="message-scroller">
+      .scroller { position: relative; width: 100%; background: var(--panel); border: 1px solid var(--rule); }
+      .scroller-view { height: 250px; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 8px; scrollbar-width: thin; scrollbar-color: var(--line) transparent; overscroll-behavior: contain; }
+      .scroller-btn { position: absolute; left: 50%; bottom: 62px; transform: translateX(-50%); padding: 5px 11px; background: var(--ink); border: none; color: var(--paper); font-size: 11.5px; font-weight: 500; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+      .scroller-foot { display: flex; gap: 8px; padding: 8px; border-top: 1px solid var(--line); }
+    </style>
+    <section class="dx-view" data-view="message-scroller" data-needs="bubble marker input button" hidden>
+      <header class="dx-head"><p data-es="El contenedor con desplazamiento de un chat: empieza abajo, sigue los mensajes nuevos mientras estás al final y, si subes, ofrece un botón para volver a lo último.">The scroll container of a chat: it opens at the end, follows new messages while you are at the bottom and, once you scroll up, offers a button back to the latest.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="scroller">
+          <div class="scroller-view" tabindex="0" aria-label="Conversation">
+            <div class="marker separator">Yesterday</div>
+            <div class="bubble">The new stylus arrived.</div>
+            <div class="bubble end">Good. I will fit it tonight.</div>
+            <div class="bubble">Remember to set the tracking force to 1.5 g.</div>
+            <div class="marker separator">Today</div>
+            <div class="bubble end">Fitted. It sounds much cleaner.</div>
+            <div class="bubble">Which record did you try?</div>
+            <div class="bubble end">Kind of Blue, side A.</div>
+            <div class="bubble">Good choice.</div>
+          </div>
+          <button class="scroller-btn" type="button" hidden>↓ Latest</button>
+          <form class="scroller-foot"><input class="input" type="text" placeholder="Write a message" aria-label="Write a message"><button class="btn btn-primary" type="submit">Send</button></form>
+        </div>
+      </div>
+      <script data-js="message-scroller">
+        (function () {
+          const atEnd = view => view.scrollHeight - view.scrollTop - view.clientHeight < 24;
+          document.addEventListener('scroll', e => {
+            const view = e.target;
+            if (view.classList && view.classList.contains('scroller-view')) view.closest('.scroller').querySelector('.scroller-btn').hidden = atEnd(view);
+          }, true);
+          document.addEventListener('click', e => {
+            const b = e.target.closest('.scroller-btn');
+            if (!b) return;
+            const view = b.closest('.scroller').querySelector('.scroller-view');
+            view.scrollTo({ top: view.scrollHeight, behavior: 'smooth' });
+          });
+          document.addEventListener('submit', e => {
+            const form = e.target.closest('.scroller-foot');
+            if (!form) return;
+            e.preventDefault();
+            const input = form.querySelector('input'), text = input.value.trim();
+            if (!text) return;
+            const view = form.closest('.scroller').querySelector('.scroller-view'), bubble = document.createElement('div');
+            bubble.className = 'bubble end'; bubble.textContent = text;
+            view.append(bubble); input.value = '';
+            view.scrollTop = view.scrollHeight;
+          });
+          // Open at the end, also when the scroller first becomes visible.
+          document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('.scroller-view').forEach(view => {
+            new ResizeObserver((entries, observer) => { if (view.clientHeight) { view.scrollTop = view.scrollHeight; observer.disconnect(); } }).observe(view);
+          }));
+        })();
+      </script>
+      </div>
+    </section>
+
+    <!-- ══ Native Select ══ -->
+    <style data-css="native-select">
+      .select-native { position: relative; display: block; }
+      .select-native select { appearance: none; -webkit-appearance: none; padding-right: 30px; cursor: pointer; }
+      .select-native::after { content: "▾"; position: absolute; right: 11px; top: 50%; transform: translateY(-50%); font-size: 10px; color: var(--steel-text); pointer-events: none; }
+    </style>
+    <section class="dx-view" data-view="native-select" data-needs="input field label card" hidden>
+      <header class="dx-head"><p data-es="El <code>&lt;select&gt;</code> del navegador con el aspecto de un campo. La lista de opciones es la del sistema, así que funciona bien en el móvil.">The browser's <code>&lt;select&gt;</code> dressed as a field. The option list is the system's own, so it works well on phones.</p></header>
+      <div class="dx-ex"><div class="dx-stage block narrow">
+        <div class="card"><div class="card-body">
+          <div class="field"><label class="label" for="ns-band">Band</label><div class="select-native"><select class="input" id="ns-band"><option>FM</option><option>Medium wave</option><option>Short wave</option></select></div></div>
+          <div class="field"><label class="label" for="ns-out">Output</label><div class="select-native"><select class="input" id="ns-out" disabled><option>Speakers</option></select></div></div>
+        </div></div>
+      </div></div>
+    </section>
+
+    <!-- ══ Navigation Menu ══ -->
+    <style data-css="navigation-menu">
+      .navmenu { display: inline-flex; flex-wrap: wrap; gap: 2px; max-width: 100%; padding: 3px; background: var(--panel); border: 1px solid var(--rule); }
+      .nav-item { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; background: none; border: none; color: var(--ink); font-size: 12.5px; font-weight: 500; text-decoration: none; cursor: pointer; white-space: nowrap; }
+      .nav-item:hover, .nav-item[aria-expanded="true"] { background: var(--inset); }
+      .nav-item[aria-current="page"] { box-shadow: inset 0 -2px 0 var(--signal); }
+      .nav-item .caret { font-size: 10px; color: var(--steel-text); }
+      .nav-panel { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; width: 420px; max-width: calc(100vw - 48px); padding: 8px; }
+      .nav-link { display: flex; flex-direction: column; gap: 2px; padding: 9px 10px; color: var(--ink); text-decoration: none; }
+      .nav-link:hover { background: var(--inset); }
+      .nav-link b { font-size: 12.5px; font-weight: 600; }
+      .nav-link span { font-size: 11.5px; color: var(--steel-text); line-height: 1.45; }
+      @media (max-width: 560px) { .nav-panel { grid-template-columns: 1fr; width: 250px; } }
+    </style>
+    <section class="dx-view" data-view="navigation-menu" data-needs="popover" data-js="popover" hidden>
+      <header class="dx-head"><p data-es="Navegación principal de un sitio: enlaces directos y secciones que abren un panel con destinos descritos. La página actual lleva un subrayado naranja.">The main navigation of a site: direct links and sections that open a panel of described destinations. The current page carries an orange underline.</p></header>
+      <div class="dx-ex"><div class="dx-stage start" style="min-height: 270px">
+        <nav class="navmenu" aria-label="Main">
+          <a class="nav-item" href="#navigation-menu" aria-current="page">Now playing</a>
+          <div class="pop-anchor">
+            <button class="nav-item" type="button" data-pop aria-expanded="false">Library <span class="caret">▾</span></button>
+            <div class="pop" hidden><div class="nav-panel">
+              <a class="nav-link" href="#navigation-menu" data-dismiss><b>Records</b><span>Every album, single and tape you own.</span></a>
+              <a class="nav-link" href="#navigation-menu" data-dismiss><b>Playlists</b><span>Sets you put together by hand.</span></a>
+              <a class="nav-link" href="#navigation-menu" data-dismiss><b>Artists</b><span>Browse the library by who recorded it.</span></a>
+              <a class="nav-link" href="#navigation-menu" data-dismiss><b>Recently added</b><span>What came in during the last 30 days.</span></a>
+            </div></div>
+          </div>
+          <a class="nav-item" href="#navigation-menu">Stations</a>
+          <a class="nav-item" href="#navigation-menu">Settings</a>
+        </nav>
+      </div></div>
+    </section>
