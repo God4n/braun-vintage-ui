@@ -187,6 +187,7 @@
 
   /* ── Theme ── */
   const themeBtn = document.getElementById('dx-theme');
+  if (!root.dataset.theme) root.dataset.theme = 'light';  /* light by default; the button switches */
   const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
   function paintTheme() { themeBtn.textContent = isDark() ? t('light') : t('dark'); }
   themeBtn.addEventListener('click', () => { root.dataset.theme = isDark() ? 'light' : 'dark'; paintTheme(); });

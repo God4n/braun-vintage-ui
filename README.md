@@ -7,12 +7,14 @@
 Plain HTML and CSS, inspired by the industrial design of Braun in the 1960s–80s (Dieter Rams, Dieter Lubs):
 neutral surfaces, square corners, knobs, graduated scales, and an orange that only lights up when something is live.
 
-[![HTML + CSS](https://img.shields.io/badge/stack-HTML%20%2B%20CSS-F36B32?style=flat-square)](#getting-started)
-[![No build step](https://img.shields.io/badge/runtime-zero%20dependencies-292929?style=flat-square)](#getting-started)
+[![HTML + CSS](https://img.shields.io/badge/stack-HTML%20%2B%20CSS-F36B32?style=flat-square)](https://god4n.github.io/braun-vintage-ui/)
+[![Claude skill](https://img.shields.io/badge/Claude-skill%20included-292929?style=flat-square)](#use-it-with-claude)
 [![Light & dark](https://img.shields.io/badge/themes-light%20%2B%20dark-92918D?style=flat-square)](#theming)
 [![EN / ES](https://img.shields.io/badge/docs-EN%20%2F%20ES-46857A?style=flat-square)](#documentation)
 
-<img src="docs/img/overview.png" alt="Braun Vintage UI gallery, light mode" width="900">
+**[→ Open the live gallery](https://god4n.github.io/braun-vintage-ui/)**
+
+<a href="https://god4n.github.io/braun-vintage-ui/"><img src="docs/img/overview.png" alt="Braun Vintage UI gallery, light mode" width="900"></a>
 
 </div>
 
@@ -24,7 +26,7 @@ A design system with three parts:
 
 | | |
 |---|---|
-| **Component gallery** (`braun-ui/`) | A single-file site with every component running live, plus the HTML / CSS / JS to copy. |
+| **[Component gallery](https://god4n.github.io/braun-vintage-ui/)** (`braun-ui/`) | A single-file site with every component running live, plus the HTML / CSS / JS to copy. |
 | **Style guide** (`BRAUN_VINTAGE_DESIGN.md`) | Principles, palette, typography, spacing and the spec of each component. Also in Spanish. |
 | **Claude skill** (`.claude/skills/braun-vintage-design`) | The same system packaged as a skill, so Claude builds new UI in this style. |
 
@@ -41,7 +43,7 @@ Every continuous value is read against a row of ticks (drawn with repeating grad
 
 ### Dark mode
 
-Same tokens, different values. Follows the system preference or the toggle in the header.
+Same tokens, different values. Switch with the toggle in the header.
 
 <img src="docs/img/overview-dark.png" alt="Gallery in dark mode" width="900">
 
@@ -72,13 +74,9 @@ Rams's ten principles, turned into concrete rules for the screen:
 
 > **Orange is a pilot light.** `--signal` means live, active or the main action. Never decoration. As a rule: one orange primary element per view.
 
-## Getting started
+## Use it
 
-No package, no bundler. Three steps:
-
-1. **Tokens.** Copy the colour tokens block (see *Color tokens* in the gallery) into your stylesheet. It covers light and dark.
-2. **Type.** Load [Archivo](https://fonts.google.com/specimen/Archivo) (400, 500, 600, 700). Monospace is the system one.
-3. **Component.** Open a component page in the gallery and copy its CSS and HTML. Components that need behaviour have a JS tab.
+Visit **[god4n.github.io/braun-vintage-ui](https://god4n.github.io/braun-vintage-ui/)**, pick a component from the sidebar and copy its HTML, CSS and JS from the tabs. Start with *Color tokens* (they cover light and dark) and load [Archivo](https://fonts.google.com/specimen/Archivo) (400, 500, 600, 700).
 
 ```css
 :root {
@@ -89,35 +87,15 @@ No package, no bundler. Three steps:
 }
 ```
 
-### Run the gallery locally
+## Use it with Claude
 
-```sh
-open braun-ui/index.html
-```
+The repo ships a **Claude skill**, [`braun-vintage-design`](.claude/skills/braun-vintage-design), that teaches Claude this design system: tokens, typography, the 25 original components and the instruments. With it, Claude Code builds new pages, components and charts in the Braun style on its own.
 
-That is the whole setup. The page loads Archivo from Google Fonts; everything else is inline.
-
-### Edit the gallery
-
-`braun-ui/index.html` is generated. Edit the files in `braun-ui/src/` and rebuild:
-
-```sh
-sh braun-ui/build.sh
-```
-
-Each component is one contiguous block, so you can search for it directly:
-
-| In `src/*.html` | Contains |
-|---|---|
-| `<style data-css="NAME">` | CSS of the component |
-| `<section data-view="NAME">` | Its page, with the example markup inside `.dx-stage` |
-| `<script data-js="NAME">` | The small behaviour it needs, if any |
-
-Class names starting with `dx-` belong to the documentation site, not to the design system.
+Copy `.claude/skills/braun-vintage-design` into your project's `.claude/skills/` (or into `~/.claude/skills/` to use it everywhere). Then ask for any UI in a Braun / Dieter Rams / instrument-panel style and Claude loads it automatically.
 
 ## Theming
 
-Light and dark share the same token names. Dark mode follows `prefers-color-scheme` and can be forced with `data-theme`:
+Light and dark share the same token names. The gallery opens in light mode; use the toggle in the header to switch. In your own pages, dark follows `prefers-color-scheme` or can be forced with `data-theme`:
 
 ```html
 <html data-theme="dark">
